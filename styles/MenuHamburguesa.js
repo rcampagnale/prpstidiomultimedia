@@ -22,7 +22,7 @@ export default StyleSheet.create({
     top: 0,
     left: 0,
     width: MENU_WIDTH,
-    height: '100%',
+    height: '150%',
     backgroundColor: '#0070f3',
     zIndex: 1000,             // Superpone el panel sobre el contenido
     shadowColor: '#000',
@@ -57,7 +57,7 @@ export default StyleSheet.create({
   divider: {
   height: 1,
   backgroundColor: '#000000',
-  marginVertical: 56,
+  marginVertical: 63,
   alignSelf: 'stretch',   // fuerza que ocupe todo el ancho
   marginHorizontal: -24,  // compensa el padding: 24 del container
 },

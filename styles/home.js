@@ -1,12 +1,10 @@
 import { Dimensions, Platform, StatusBar, StyleSheet } from 'react-native';
-
 const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    // Empuja el contenido hacia abajo para quedar debajo del status bar con espacio adicional:
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 20 : 20,
   },
   safeArea: {
@@ -15,7 +13,7 @@ export default StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 4,
   },
   greeting: {
     fontSize: 18,
@@ -92,6 +90,35 @@ export default StyleSheet.create({
     color: '#666',
     marginTop: 4,
   },
+  // Auspiciantes
+  sponsorCarousel: {
+    paddingHorizontal: 24,
+  },
+  sponsorCard: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    marginRight: 16,
+    alignItems: 'center',
+    elevation: 4,
+  },
+  sponsorImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  sponsorName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  sponsorInfo: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+    textAlign: 'center',
+  },
   button: {
     backgroundColor: '#0070f3',
     paddingVertical: 12,
@@ -103,5 +130,33 @@ export default StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: '600',
+  },
+  sponsorCarousel: {
+    paddingHorizontal: 24,
+  },
+  sponsorCard: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    marginRight: 16,
+    alignItems: 'center',
+    elevation: 4,
+  },
+  sponsorImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  sponsorName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  sponsorInfo: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+    textAlign: 'center',
   },
 });

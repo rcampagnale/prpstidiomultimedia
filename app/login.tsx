@@ -67,12 +67,7 @@ export default function Login() {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#28a745", marginTop: 16 }]}
-          onPress={handleRegister}
-        >
-          <Text style={styles.buttonText}>Registrarse</Text>
-        </TouchableOpacity>
+        
         <Text style={{ marginTop: 24, textAlign: "center", color: "#fff" }}>
           Sigue nuestras redes sociales:
         </Text>

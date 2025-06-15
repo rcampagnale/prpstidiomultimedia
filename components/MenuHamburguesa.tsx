@@ -68,8 +68,8 @@ export default function MenuHamburguesa() {
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
-                // Aquí cerramos sesión y volvemos al Login
-                router.replace('/login');
+                // Aquí cerramos sesión y volvemos al home general
+                router.replace('/home');
               }}
             >
               <Text style={styles.menuText}>Cerrar Sesión</Text>
