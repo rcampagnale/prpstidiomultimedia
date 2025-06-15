@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -11,13 +11,10 @@ import { WebView } from 'react-native-webview';
 import styles from '../../styles/[videoId]';
 
 export default function WatchVideo() {
-  // Obtener params de la ruta
-  const params = new URLSearchParams();
   const router = useRouter();
-  const videoId = params.get('videoId');
+  const { videoId } = useLocalSearchParams();
 
-  // Si no hay videoId, mostrar error
-  if (!videoId) {
+  if (!videoId || typeof videoId !== 'string') {
     return (
       <SafeAreaView style={styles.center}>
         <Text style={styles.errorText}>No se encontró el video.</Text>
@@ -25,7 +22,6 @@ export default function WatchVideo() {
     );
   }
 
-  // URL embed sin cookies
   const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1&rel=0`;
 
   return (
