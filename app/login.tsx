@@ -1,5 +1,6 @@
+// app/login.tsx
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -11,21 +12,44 @@ import {
   View,
 } from "react-native";
 import styles from "../styles/login";
+// Importar Firestore
+import { doc, enableNetwork, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  // Asegurar conexión con Firestore
+  useEffect(() => {
+    enableNetwork(db).catch(err => console.error("Error habilitando red Firestore:", err));
+  }, []);
+
+  const handleLogin = async () => {
     if (username.trim() === "" || password.trim() === "") {
       Alert.alert("Error", "Por favor completa todos los campos");
       return;
     }
-    if (username === "1234" && password === "1234") {
-      router.replace("/home");
-    } else {
+    // Usuario y contraseña deben ser el mismo DNI
+    if (username !== password) {
       Alert.alert("Error", "Usuario o contraseña incorrectos");
+      return;
+    }
+
+    try {
+      // Buscar usuario en Firestore
+      const userRef = doc(db, "usuarios", username);
+      const snapshot = await getDoc(userRef);
+      if (!snapshot.exists()) {
+        Alert.alert("Error", "Usuario no encontrado");
+        return;
+      }
+      // Login exitoso
+      router.replace("/home");
+    } catch (err) {
+      console.error("❌ Error al iniciar sesión:", err);
+      Alert.alert("Error", "No se pudo iniciar sesión");
     }
   };
 
@@ -48,7 +72,7 @@ export default function Login() {
         <Text style={styles.title}>Iniciar Sesión</Text>
         <TextInput
           style={styles.input}
-          placeholder="Usuario"
+          placeholder="Usuario (DNI)"
           placeholderTextColor="#666"
           keyboardType="number-pad"
           autoCapitalize="none"
@@ -57,7 +81,7 @@ export default function Login() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Contraseña"
+          placeholder="Contraseña (DNI)"
           placeholderTextColor="#666"
           keyboardType="number-pad"
           secureTextEntry
@@ -67,7 +91,6 @@ export default function Login() {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
-        
         <Text style={{ marginTop: 24, textAlign: "center", color: "#fff" }}>
           Sigue nuestras redes sociales:
         </Text>
@@ -80,44 +103,28 @@ export default function Login() {
             marginTop: 16,
           }}
         >
-          <TouchableOpacity
-            onPress={() => {
-              /* Abrir Facebook */
-            }}
-          >
+          <TouchableOpacity onPress={() => { /* Abrir Facebook */ }}>
             <Image
               source={require("../assets/facebook1.png")}
               style={{ width: 50, height: 50 }}
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              /* Abrir YouTube */
-            }}
-          >
+          <TouchableOpacity onPress={() => { /* Abrir YouTube */ }}>
             <Image
               source={require("../assets/youtube.png")}
               style={{ width: 50, height: 50 }}
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              /* Abrir Instagram */
-            }}
-          >
+          <TouchableOpacity onPress={() => { /* Abrir Instagram */ }}>
             <Image
               source={require("../assets/instagram.png")}
               style={{ width: 50, height: 50 }}
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              /* Abrir Twitch */
-            }}
-          >
+          <TouchableOpacity onPress={() => { /* Abrir Twitch */ }}>
             <Image
               source={require("../assets/twitch1.png")}
               style={{ width: 50, height: 50 }}
@@ -135,12 +142,7 @@ export default function Login() {
           }}
         >
           <Text style={{ color: "#fff", fontSize: 20 }}>Contacto:</Text>
-          <TouchableOpacity
-            onPress={() => {
-              /* Abrir WhatsApp */
-            }}
-            style={{ marginLeft: 8 }}
-          >
+          <TouchableOpacity onPress={() => { /* Abrir WhatsApp */ }} style={{ marginLeft: 8 }}>
             <Image
               source={require("../assets/logowsp.png")}
               style={{ width: 40, height: 40 }}
@@ -152,3 +154,4 @@ export default function Login() {
     </ImageBackground>
   );
 }
+

@@ -37,6 +37,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "firebaseApiKey": "AIzaSyACJXQhS7AapphfDDs4tl79IkWW9FWG9d4",
+      "firebaseAuthDomain": "prpstudiomultimediaapp.firebaseapp.com",
+      "firebaseProjectId": "prpstudiomultimediaapp",
+      "firebaseStorageBucket": "prpstudiomultimediaapp.firebasestorage.app",
+      "firebaseMessagingSenderId": "649777654541",
+      "firebaseAppId": "1:649777654541:web:08b82ae5fe8c13b2955e44"
     }
   }
 }

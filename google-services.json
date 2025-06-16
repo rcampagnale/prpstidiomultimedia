@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "649777654541",
+    "project_id": "prpstudiomultimediaapp",
+    "storage_bucket": "prpstudiomultimediaapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:649777654541:android:05bd52fda266c247955e44",
+        "android_client_info": {
+          "package_name": "com.prprstudiomultimedia.prpstudiomultimediaapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfkDyTTrL-OXniMTVrtnDXCWpZnLwk9qQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

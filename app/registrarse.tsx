@@ -1,7 +1,6 @@
 // app/registrarse.tsx
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   ImageBackground,
@@ -14,15 +13,14 @@ import {
 } from 'react-native';
 import styles from '../styles/registrarse';
 
-type User = {
-  apellido: string;
-  nombre: string;
-  dni: string;
-  departamento: string;
-  correo: string;
-  fechaNacimiento: string;
-  telefono: string;
-};
+import {
+  doc,
+  enableNetwork,
+  getDoc,
+  serverTimestamp,
+  setDoc
+} from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Registrarse() {
   const router = useRouter();
@@ -34,7 +32,15 @@ export default function Registrarse() {
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [telefono, setTelefono] = useState('');
 
+  // Al montar, aseguramos que Firestore use la red (no cache offline)
+  useEffect(() => {
+    enableNetwork(db).catch(err =>
+      console.error('❌ No se pudo forzar la red en Firestore:', err)
+    );
+  }, []);
+
   const handleRegister = async () => {
+    // 1) Validación de campos
     if (
       !apellido.trim() ||
       !nombre.trim() ||
@@ -49,21 +55,31 @@ export default function Registrarse() {
     }
 
     try {
-      const stored = await AsyncStorage.getItem('users');
-      const users: User[] = stored ? JSON.parse(stored) : [];
-      const exists = users.some(
-        (u) => u.dni === dni || u.correo.toLowerCase() === correo.toLowerCase()
-      );
-      if (exists) {
-        Alert.alert('Error', 'Ya existe un usuario con ese DNI o correo');
+      // 2) Referencia al documento basado en el DNI
+      const usuarioRef = doc(db, 'usuarios', dni);
+      // 3) ¿Existe ya?
+      const snapshot = await getDoc(usuarioRef);
+      if (snapshot.exists()) {
+        Alert.alert('Error', 'Ya existe un usuario con ese DNI');
         return;
       }
-      const newUser: User = { apellido, nombre, dni, departamento, correo, fechaNacimiento, telefono };
-      users.push(newUser);
-      await AsyncStorage.setItem('users', JSON.stringify(users));
+
+      // 4) Crear documento en Firestore
+      await setDoc(usuarioRef, {
+        apellido,
+        nombre,
+        dni,
+        departamento,
+        correo,
+        fechaNacimiento,
+        telefono,
+        createdAt: serverTimestamp()
+      });
+
+      Alert.alert('¡Listo!', 'Usuario registrado correctamente');
       router.replace('/home');
     } catch (err) {
-      console.error(err);
+      console.error('❌ Error al completar el registro:', err);
       Alert.alert('Error', 'No se pudo completar el registro');
     }
   };
