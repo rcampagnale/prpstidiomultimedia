@@ -229,7 +229,7 @@ export default function HomeVisitante() {
               <View style={styles.socialIconsRowEnhanced}>
                 <TouchableOpacity
                   onPress={() =>
-                    Linking.openURL("https://facebook.com/prpstudio")
+                    Linking.openURL("https://www.facebook.com/profile.php?id=61575238830833")
                   }
                 >
                   <Image
@@ -239,7 +239,7 @@ export default function HomeVisitante() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>
-                    Linking.openURL("https://instagram.com/prpstudio")
+                    Linking.openURL("https://www.instagram.com/prpstudiom")
                   }
                 >
                   <Image
@@ -249,7 +249,7 @@ export default function HomeVisitante() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>
-                    Linking.openURL("https://youtube.com/@PRPenvivo")
+                    Linking.openURL("https://www.youtube.com/@PRPenvivo")
                   }
                 >
                   <Image
@@ -259,7 +259,7 @@ export default function HomeVisitante() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>
-                    Linking.openURL("https://www.twitch.tv/prpstudio2025")
+                    Linking.openURL("https://www.twitch.tv/prpstudio2025?sr=a")
                   }
                 >
                   <Image

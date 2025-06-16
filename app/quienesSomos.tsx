@@ -66,7 +66,7 @@ export default function QuienesSomos() {
           <Text style={styles.socialTitle}>Seguinos en redes Sociales</Text>
           <View style={styles.socialIconsRow}>
             <TouchableOpacity
-              onPress={() => Linking.openURL("https://facebook.com/prpstudio")}
+              onPress={() => Linking.openURL("https://www.facebook.com/profile.php?viewas=100000686899395&id=61575238830833")}
             >
               <Image
                 source={require("../assets/facebook1.png")}
@@ -74,7 +74,7 @@ export default function QuienesSomos() {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => Linking.openURL("https://instagram.com/prpstudio")}
+              onPress={() => Linking.openURL("https://www.instagram.com/prpstudiom/")}
             >
               <Image
                 source={require("../assets/instagram.png")}
@@ -82,7 +82,7 @@ export default function QuienesSomos() {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => Linking.openURL("https://youtube.com/@PRPenvivo")}
+              onPress={() => Linking.openURL("https://www.youtube.com/@PRPenvivo")}
             >
               <Image
                 source={require("../assets/youtube.png")}
@@ -91,7 +91,7 @@ export default function QuienesSomos() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
-                Linking.openURL("https://www.twitch.tv/prpstudio2025")
+                Linking.openURL("https://www.twitch.tv/prpstudio2025?sr=a")
               }
             >
               <Image

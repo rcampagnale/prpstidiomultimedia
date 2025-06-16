@@ -9,6 +9,7 @@ import {
   BackHandler,
   Image,
   ImageBackground,
+  Linking,
   SafeAreaView,
   Text,
   TextInput,
@@ -103,23 +104,23 @@ export default function Login() {
           Sigue nuestras redes sociales:
         </Text>
         <View style={{ flexDirection: "row", justifyContent: "space-around", width: "80%", alignSelf: "center", marginTop: 16 }}>
-          <TouchableOpacity disabled={loading}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/profile.php?id=61575238830833')} disabled={loading}>
             <Image source={require("../assets/facebook1.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity disabled={loading}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/@PRPenvivo')} disabled={loading}>
             <Image source={require("../assets/youtube.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity disabled={loading}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.instagram.com/prpstudiom')} disabled={loading}>
             <Image source={require("../assets/instagram.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity disabled={loading}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.twitch.tv/prpstudio2025?sr=a')} disabled={loading}>
             <Image source={require("../assets/twitch1.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
         </View>
 
         <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 24, width: "100%" }}>
           <Text style={{ color: "#fff", fontSize: 20 }}>Contacto:</Text>
-          <TouchableOpacity disabled={loading} style={{ marginLeft: 8 }}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://wa.me/+5493834642424')} disabled={loading} style={{ marginLeft: 8 }}>
             <Image source={require("../assets/logowsp.png")} style={{ width: 40, height: 40 }} resizeMode="contain" />
           </TouchableOpacity>
         </View>

@@ -1,5 +1,6 @@
+// app/contacto.tsx
 import MenuHamburguesa from "@/components/MenuHamburguesa";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
   BackHandler,
@@ -9,23 +10,25 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import styles from "../styles/contacto";
 
-useEffect(() => {
+export default function Contacto() {
+  const router = useRouter();
+
+  useEffect(() => {
     const backAction = () => {
-      router.replace('/home');
+      router.replace("/home");
       return true;
     };
     const subscription = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       backAction
     );
     return () => subscription.remove();
   }, []);
 
-export default function Contacto() {
   return (
     <>
       <StatusBar
@@ -48,8 +51,8 @@ export default function Contacto() {
           podés comunicarte con nosotros a través de los siguientes medios:
         </Text>
 
-        <Text style={styles.paragraph}>📧 Correo: contacto@prpstudio.com</Text>
-        <Text style={styles.paragraph}>📞 Teléfono: +54 3834 123456</Text>
+        <Text style={styles.paragraph}>📧 Correo: prpstudio.mm@gmail.com</Text>
+        <Text style={styles.paragraph}>📞 Teléfono: +54 3834 64-2424</Text>
         <Text style={styles.paragraph}>📍 Dirección: Catamarca, Argentina</Text>
 
         <View style={styles.divider} />
@@ -58,7 +61,11 @@ export default function Contacto() {
           <Text style={styles.socialTitle}>También podés encontrarnos en</Text>
           <View style={styles.socialIconsRow}>
             <TouchableOpacity
-              onPress={() => Linking.openURL("https://facebook.com/prpstudio")}
+              onPress={() =>
+                Linking.openURL(
+                  "https://www.facebook.com/profile.php?viewas=100000686899395&id=61575238830833"
+                )
+              }
             >
               <Image
                 source={require("../assets/facebook1.png")}
@@ -66,7 +73,9 @@ export default function Contacto() {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => Linking.openURL("https://instagram.com/prpstudio")}
+              onPress={() =>
+                Linking.openURL("https://www.instagram.com/prpstudiom/")
+              }
             >
               <Image
                 source={require("../assets/instagram.png")}
@@ -74,7 +83,9 @@ export default function Contacto() {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => Linking.openURL("https://youtube.com/@PRPenvivo")}
+              onPress={() =>
+                Linking.openURL("https://www.youtube.com/@PRPenvivo")
+              }
             >
               <Image
                 source={require("../assets/youtube.png")}
