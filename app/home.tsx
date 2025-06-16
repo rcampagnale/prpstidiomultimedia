@@ -1,6 +1,8 @@
 // app/home.tsx
 import { YOUTUBE_API_KEY, YOUTUBE_CHANNEL_ID } from "@/config/youtube";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
+import { doc, enableNetwork, getDoc } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -17,6 +19,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import MenuHamburguesa from "../components/MenuHamburguesa";
+import { db } from '../firebase';
 import styles from "../styles/home";
 
 // Obtener ancho de pantalla
@@ -65,7 +68,28 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [videos, setVideos] = useState<Video[]>([]);
   const sponsorRef = useRef<ScrollView>(null);
-  const userName = "Rubén";
+  
+  const [userName, setUserName] = useState<string>('');
+
+  useEffect(() => {
+    enableNetwork(db)
+      .then(() => AsyncStorage.getItem('loggedDNI'))
+      .then(dni => {
+        console.log('🔍 DNI obtenido de AsyncStorage:', dni);
+        if (dni) return getDoc(doc(db, 'usuarios', dni));
+      })
+      .then(snap => {
+        if (snap?.exists()) {
+          const data = snap.data();
+          const fullName = `${data.nombre} ${data.apellido}`;
+          console.log('✅ Usuario cargado desde Firestore:', fullName);
+          setUserName(fullName);
+        } else {
+          console.warn('⚠️ Documento de usuario no existe');
+        }
+      })
+      .catch(err => console.error('❌ Error cargando usuario:', err));
+  }, []);
 
   useEffect(() => {
     setLoading(true);
