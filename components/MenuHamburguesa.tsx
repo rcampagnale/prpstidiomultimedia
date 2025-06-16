@@ -1,4 +1,5 @@
-import { router } from "expo-router";
+// components/MenuHamburguesa.tsx
+import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
   Animated,
@@ -7,14 +8,16 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
-import styles from "../styles/MenuHamburguesa"; // Asegúrate de tener un archivo de estilos adecuado
+import styles from "../styles/MenuHamburguesa"; // Archivo de estilos
 
 const { width } = Dimensions.get("window");
 const MENU_WIDTH = width * 0.75;
 
 export default function MenuHamburguesa() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const translateX = useRef(new Animated.Value(-MENU_WIDTH)).current;
 
@@ -29,7 +32,7 @@ export default function MenuHamburguesa() {
 
   return (
     <>
-      {/* Botón hamburguesa con imagen */}
+      {/* Botón hamburguesa */}
       <TouchableOpacity onPress={toggleMenu} style={styles.hamburgerButton}>
         <Image
           source={require("../assets/logo.jpeg")}
@@ -38,43 +41,63 @@ export default function MenuHamburguesa() {
         />
       </TouchableOpacity>
 
+      {/* Overlay para interceptar toques cuando el menú está abierto */}
+      {open && (
+        <TouchableWithoutFeedback onPress={toggleMenu}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+      )}
+
       {/* Panel de menú deslizable */}
       <Animated.View
-        style={[styles.menuPanel, { transform: [{ translateX }] }]}
+        style={[
+          styles.menuPanel,
+          { transform: [{ translateX }], zIndex: 2 },
+        ]}
       >
         <SafeAreaView style={styles.menuContainer}>
-          {/* Ítems de menú */}
           <View style={styles.menuItems}>
             <View style={styles.divider} />
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => router.push("/home")}
+              onPress={() => {
+                toggleMenu();
+                router.push("/home");
+              }}
             >
               <Text style={styles.menuText}>Inicio</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => router.push("/datosPersonales")}
+              onPress={() => {
+                toggleMenu();
+                router.push("/datosPersonales");
+              }}
             >
               <Text style={styles.menuText}>Datos Personales</Text>
             </TouchableOpacity>
-
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => router.push("/quienesSomos")}
+              onPress={() => {
+                toggleMenu();
+                router.push("/quienesSomos");
+              }}
             >
               <Text style={styles.menuText}>Quienes Somos</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => router.push("/contacto")}
+              onPress={() => {
+                toggleMenu();
+                router.push("/contacto");
+              }}
             >
               <Text style={styles.menuText}>Contacto</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
-                // Aquí cerramos sesión y volvemos al home general
+                toggleMenu();
                 router.replace("/homeVisitante");
               }}
             >
@@ -86,3 +109,4 @@ export default function MenuHamburguesa() {
     </>
   );
 }
+

@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet } from 'react-native';
 
 // Calcula el ancho del menú en base al 75% del ancho de pantalla
-const { width } = Dimensions.get('window');
+const { width,height  } = Dimensions.get('window');
 const MENU_WIDTH = width * 0.75;
 
 export default StyleSheet.create({
@@ -57,10 +57,18 @@ export default StyleSheet.create({
   divider: {
   height: 1,
   backgroundColor: '#000000',
-  marginVertical: 58,
+  marginVertical: 51,
   alignSelf: 'stretch',   // fuerza que ocupe todo el ancho
   marginHorizontal: -12,  // compensa el padding: 24 del container
 },
-
+overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: width,
+    height: height,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semitransparente para oscurecer el fondo
+    zIndex: 1, // debajo del panel deslizable (que tiene zIndex: 2)
+  },
 
 });
