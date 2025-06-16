@@ -65,6 +65,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [videos, setVideos] = useState<Video[]>([]);
   const sponsorRef = useRef<ScrollView>(null);
+  const userName = "Rubén";
 
   useEffect(() => {
     setLoading(true);
@@ -244,9 +245,14 @@ export default function Home() {
               { justifyContent: "space-between", paddingHorizontal: 8 },
             ]}
           >
-            <Text style={styles.greeting}>Bienvenido</Text>
-            <View style={{ flexDirection: "row" }}></View>
+            <Text style={styles.greeting}>
+              Bienvenido{userName ? `, ${userName}` : ""}
+            </Text>
+            <View style={{ flexDirection: "row" }}>
+              {/* Botones u otros elementos */}
+            </View>
           </View>
+
           <View style={styles.divider} />
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {/* Live Stream */}
@@ -263,7 +269,6 @@ export default function Home() {
               </View>
             </View>
 
-          
             {/* Weekly Programming */}
             <View style={styles.sectionBoxEnhanced}>
               <Text style={styles.sectionTitleEnhanced}>
@@ -299,7 +304,6 @@ export default function Home() {
               </View>
             </View>
 
-            
             {/* Top Videos */}
             <View style={styles.sectionBoxEnhanced}>
               <Text style={styles.sectionTitleEnhanced}>🔥 Lo más visto</Text>
@@ -339,7 +343,6 @@ export default function Home() {
               )}
             </View>
 
-            
             {/* Sponsors Carousel */}
             <View style={styles.sponsorBox}>
               <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
@@ -365,7 +368,6 @@ export default function Home() {
               </ScrollView>
             </View>
 
-         
             <View style={styles.sectionBoxEnhancedPodcast}>
               <Text style={styles.sectionTitleEnhancedPodcast}>🎧 Podcast</Text>
               <Text style={styles.sectionNoteEnhancedPodcast}>
@@ -401,7 +403,6 @@ export default function Home() {
               ))}
             </View>
 
-            
             <View style={styles.sectionBoxEnhancedNews}>
               <Text style={styles.sectionTitleEnhancedNews}>📰 Noticias</Text>
               {newsList.map((news, idx) => (
@@ -426,7 +427,6 @@ export default function Home() {
               ))}
             </View>
 
-            
             <View style={styles.socialBox}>
               <Text style={styles.socialTitleEnhanced}>
                 📲 Seguinos en redes sociales

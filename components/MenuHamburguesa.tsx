@@ -48,6 +48,12 @@ export default function MenuHamburguesa() {
             <View style={styles.divider} />
             <TouchableOpacity
               style={styles.menuItem}
+              onPress={() => router.push("/home")}
+            >
+              <Text style={styles.menuText}>Inicio</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
               onPress={() => router.push("/datosPersonales")}
             >
               <Text style={styles.menuText}>Datos Personales</Text>
