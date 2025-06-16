@@ -1,8 +1,7 @@
 // app/home.tsx
-import { YOUTUBE_API_KEY, YOUTUBE_CHANNEL_ID } from "@/config/youtube";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { doc, enableNetwork, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -19,7 +18,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import MenuHamburguesa from "../components/MenuHamburguesa";
-import { db } from '../firebase';
+import { db } from "../firebase";
 import styles from "../styles/home";
 
 // Obtener ancho de pantalla
@@ -68,75 +67,33 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [videos, setVideos] = useState<Video[]>([]);
   const sponsorRef = useRef<ScrollView>(null);
-  
-  const [userName, setUserName] = useState<string>('');
+
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
-    enableNetwork(db)
-      .then(() => AsyncStorage.getItem('loggedDNI'))
-      .then(dni => {
-        console.log('🔍 DNI obtenido de AsyncStorage:', dni);
-        if (dni) return getDoc(doc(db, 'usuarios', dni));
-      })
-      .then(snap => {
-        if (snap?.exists()) {
-          const data = snap.data();
-          const fullName = `${data.nombre} ${data.apellido}`;
-          console.log('✅ Usuario cargado desde Firestore:', fullName);
-          setUserName(fullName);
-        } else {
-          console.warn('⚠️ Documento de usuario no existe');
-        }
-      })
-      .catch(err => console.error('❌ Error cargando usuario:', err));
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    (async () => {
-      try {
-        const searchRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?` +
-            `key=${YOUTUBE_API_KEY}` +
-            `&channelId=${YOUTUBE_CHANNEL_ID}` +
-            `&part=snippet&maxResults=25&type=video`
-        );
-        const searchData = await searchRes.json();
-        console.log("searchData", searchData);
-
-        const videoIds = searchData.items
-          .map((item: any) => item.id.videoId)
-          .filter(Boolean)
-          .join(",");
-
-        const statsRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?` +
-            `key=${YOUTUBE_API_KEY}` +
-            `&id=${videoIds}&part=snippet,statistics`
-        );
-        const statsData = await statsRes.json();
-        console.log("statsData", statsData);
-
-        const sorted = statsData.items
-          .sort(
-            (a: any, b: any) =>
-              Number(b.statistics.viewCount) - Number(a.statistics.viewCount)
-          )
-          .map((it: any) => ({
-            id: it.id,
-            thumbnail: it.snippet.thumbnails.medium.url,
-            title: it.snippet.title,
-            views: it.statistics.viewCount,
-          }));
-
-        setVideos(sorted);
-      } catch (e) {
-        console.error("Error al cargar los videos más vistos:", e);
-      } finally {
-        setLoading(false);
+  (async () => {
+    try {
+      const dni = await AsyncStorage.getItem("loggedDNI");
+      console.log("🔍 DNI obtenido de AsyncStorage:", dni);
+      if (!dni) {
+        console.warn("⚠️ No hay DNI en AsyncStorage");
+        return;
       }
-    })();
-  }, []);
+      const snap = await getDoc(doc(db, "usuarios", dni));
+      if (snap.exists()) {
+        const data = snap.data();
+        const fullName = `${data.nombre} ${data.apellido}`;
+        console.log("✅ Usuario cargado desde Firestore:", fullName);
+        setUserName(fullName);
+      } else {
+        console.warn("⚠️ Documento de usuario no existe en Firestore");
+      }
+    } catch (err) {
+      console.error("❌ Error cargando usuario:", err);
+    }
+  })();
+}, []);
+
 
   // Example program carousel data
   const programs = [
