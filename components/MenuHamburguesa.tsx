@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import styles from "../styles/MenuHamburguesa"; // Asegúrate de tener un archivo de estilos adecuado
 
@@ -29,7 +29,6 @@ export default function MenuHamburguesa() {
 
   return (
     <>
-    
       {/* Botón hamburguesa con imagen */}
       <TouchableOpacity onPress={toggleMenu} style={styles.hamburgerButton}>
         <Image
@@ -44,7 +43,7 @@ export default function MenuHamburguesa() {
         style={[styles.menuPanel, { transform: [{ translateX }] }]}
       >
         <SafeAreaView style={styles.menuContainer}>
-           {/* Ítems de menú */}
+          {/* Ítems de menú */}
           <View style={styles.menuItems}>
             <View style={styles.divider} />
             <TouchableOpacity
@@ -55,13 +54,13 @@ export default function MenuHamburguesa() {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => console.log("Perfil")}
+              onPress={() => router.push("/quienesSomos")}
             >
               <Text style={styles.menuText}>Quienes Somos</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => console.log("Configuración")}
+              onPress={() => router.push("/contacto")}
             >
               <Text style={styles.menuText}>Contacto</Text>
             </TouchableOpacity>
@@ -69,7 +68,7 @@ export default function MenuHamburguesa() {
               style={styles.menuItem}
               onPress={() => {
                 // Aquí cerramos sesión y volvemos al home general
-                router.replace('/home');
+                router.replace("/home");
               }}
             >
               <Text style={styles.menuText}>Cerrar Sesión</Text>

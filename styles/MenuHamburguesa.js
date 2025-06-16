@@ -42,7 +42,7 @@ export default StyleSheet.create({
     zIndex: 1002,
   },
   menuItems: {
-    marginTop: 24,
+    marginTop: 30,
   },
   menuItem: {
     paddingVertical: 42,
@@ -57,9 +57,9 @@ export default StyleSheet.create({
   divider: {
   height: 1,
   backgroundColor: '#000000',
-  marginVertical: 63,
+  marginVertical: 58,
   alignSelf: 'stretch',   // fuerza que ocupe todo el ancho
-  marginHorizontal: -24,  // compensa el padding: 24 del container
+  marginHorizontal: -12,  // compensa el padding: 24 del container
 },
 
 
