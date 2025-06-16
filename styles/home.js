@@ -231,6 +231,391 @@ socialIcon: {
   height: 40,
   marginHorizontal: 10,
  },
+ liveSection: {
+  width: '100%',
+  backgroundColor: '#eaf6ff',
+  padding: 20,
+  borderRadius: 12,
+  marginBottom: 24,
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.05,
+  shadowRadius: 4,
+  elevation: 3,
+},
+
+liveTitle: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  color: '#003d66',
+  marginBottom: 6,
+  textAlign: 'center',
+},
+
+liveSubtitle: {
+  fontSize: 16,
+  fontWeight: '600',
+  color: '#0077cc',
+  marginBottom: 12,
+  textAlign: 'center',
+},
+
+liveVideoContainer: {
+  width: '100%',
+  height: 400,
+  backgroundColor: '#000',
+  borderRadius: 12,
+  overflow: 'hidden',
+},
+sectionBoxEnhanced: {
+  width: '100%',
+  backgroundColor: '#ffffff',
+  borderRadius: 12,
+  padding: 20,
+  marginBottom: 24,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+  borderLeftWidth: 5,
+  borderLeftColor: '#0070f3',
+},
+
+sectionTitleEnhanced: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  color: '#0070f3',
+  marginBottom: 10,
+  textAlign: 'center',
+},
+
+sectionNoteEnhanced: {
+  fontSize: 15,
+  color: '#444',
+  lineHeight: 22,
+  textAlign: 'center',
+},
+
+programCarouselWrapper: {
+  marginVertical: 16,
+},
+
+programCarousel: {
+  paddingHorizontal: 24,
+},
+
+programCard: {
+  backgroundColor: '#eee',
+  borderRadius: 8,
+  overflow: 'hidden',
+  elevation: 3,
+  marginRight: 26,
+},
+
+programImage: {
+  width: '100%',
+  height: 120,
+},
+
+programInfo: {
+  padding: 12,
+},
+
+programTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+
+programTime: {
+  fontSize: 14,
+  color: '#666',
+  marginTop: 4,
+},
+sectionBoxEnhanced: {
+  width: '100%',
+  backgroundColor: '#ffffff',
+  borderRadius: 12,
+  padding: 20,
+  marginBottom: 24,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+  borderLeftWidth: 5,
+  borderLeftColor: '#0070f3',
+},
+
+sectionTitleEnhanced: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  color: '#0070f3',
+  marginBottom: 10,
+  textAlign: 'center',
+},
+
+sectionNoteEnhanced: {
+  fontSize: 15,
+  color: '#444',
+  lineHeight: 22,
+  textAlign: 'center',
+},
+
+programCarousel: {
+  paddingHorizontal: 24,
+},
+
+programCard: {
+  backgroundColor: '#eee',
+  borderRadius: 8,
+  overflow: 'hidden',
+  elevation: 3,
+  marginRight: 26,
+},
+
+programImage: {
+  width: '100%',
+  height: 120,
+},
+
+programInfo: {
+  padding: 12,
+},
+
+programTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+sponsorBox: {
+  width: '100%',
+  backgroundColor: '#f9f9f9',
+  borderRadius: 12,
+  paddingVertical: 20,
+  paddingHorizontal: 10,
+  marginBottom: 24,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.08,
+  shadowRadius: 2,
+  elevation: 2,
+},
+
+sponsorTitle: {
+  fontSize: 20,
+  fontWeight: '700',
+  color: '#005c8a',
+  marginBottom: 16,
+  textAlign: 'center',
+},
+
+sponsorCarouselEnhanced: {
+  paddingLeft: 16,
+},
+
+sponsorCardEnhanced: {
+  backgroundColor: '#fff',
+  borderRadius: 12,
+  padding: 16,
+  marginRight: 16,
+  alignItems: 'center',
+  elevation: 3,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+},
+
+sponsorImageEnhanced: {
+  width: '100%',
+  height: 130,
+  borderRadius: 10,
+  marginBottom: 12,
+},
+
+sponsorNameEnhanced: {
+  fontSize: 18,
+  fontWeight: '700',
+  color: '#222',
+  marginBottom: 4,
+},
+
+sponsorInfoEnhanced: {
+  fontSize: 14,
+  color: '#555',
+  textAlign: 'center',
+},
+sectionBoxEnhancedPodcast: {
+  width: '100%',
+  backgroundColor: '#ffffff',
+  borderRadius: 12,
+  padding: 20,
+  marginBottom: 24,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+  borderLeftWidth: 5,
+  borderLeftColor: '#8E44AD', // Morado para distinguir la sección de Podcast
+},
+
+sectionTitleEnhancedPodcast: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  color: '#8E44AD',
+  marginBottom: 10,
+  textAlign: 'center',
+},
+
+sectionNoteEnhancedPodcast: {
+  fontSize: 15,
+  color: '#444',
+  lineHeight: 22,
+  textAlign: 'center',
+},
+
+subtitle: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#444',
+  marginTop: 20,
+  marginBottom: 12,
+},
+
+card: {
+  width: width * 0.5,
+  marginRight: 16,
+  backgroundColor: '#c5ceae',
+  borderRadius: 12,
+  overflow: 'hidden',
+  elevation: 2,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+},
+
+cardImage: {
+  width: '100%',
+  height: 100,
+  resizeMode: 'cover',
+},
+
+cardTitle: {
+  fontSize: 14,
+  fontWeight: '600',
+  padding: 10,
+  color: '#333',
+},
+sectionBoxEnhancedNews: {
+  width: '100%',
+  backgroundColor: '#ffffff',
+  borderRadius: 12,
+  padding: 20,
+  marginBottom: 24,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+  borderLeftWidth: 5,
+  borderLeftColor: '#D35400', // Naranja suave para destacar la sección de noticias
+},
+
+sectionTitleEnhancedNews: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  color: '#D35400',
+  marginBottom: 16,
+  textAlign: 'center',
+},
+
+newsCardEnhanced: {
+  flexDirection: 'row',
+  backgroundColor: '#fafafa',
+  borderRadius: 10,
+  overflow: 'hidden',
+  marginBottom: 12,
+  elevation: 2,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.08,
+  shadowRadius: 2,
+},
+
+newsImageEnhanced: {
+  width: 100,
+  height: 100,
+  resizeMode: 'cover',
+  borderTopLeftRadius: 10,
+  borderBottomLeftRadius: 10,
+},
+
+newsContentEnhanced: {
+  flex: 1,
+  padding: 10,
+  justifyContent: 'center',
+},
+
+newsTitleEnhanced: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#2c3e50',
+  marginBottom: 4,
+},
+
+newsExcerptEnhanced: {
+  fontSize: 14,
+  color: '#666',
+  lineHeight: 20,
+},
+socialBox: {
+  width: '100%',
+  backgroundColor: '#fdfdfd',
+  borderRadius: 12,
+  padding: 20,
+  marginBottom: 24,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.08,
+  shadowRadius: 2,
+  elevation: 2,
+  alignItems: 'center',
+  borderLeftWidth: 5,
+  borderLeftColor: '#3b5998', // Facebook blue
+},
+
+socialTitleEnhanced: {
+  fontSize: 20,
+  fontWeight: '700',
+  color: '#3b5998',
+  marginBottom: 16,
+  textAlign: 'center',
+},
+
+socialIconsRowEnhanced: {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  width: '100%',
+  marginTop: 8,
+},
+
+socialIconEnhanced: {
+  width: 50,
+  height: 50,
+  marginHorizontal: 10,
+  borderRadius: 25,
+  backgroundColor: '#fff',
+  padding: 6,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.1,
+  shadowRadius: 2,
+  elevation: 2,
+},
+
 
 });
 

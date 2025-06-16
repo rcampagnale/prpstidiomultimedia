@@ -245,47 +245,15 @@ export default function Home() {
             ]}
           >
             <Text style={styles.greeting}>Bienvenido</Text>
-            <View style={{ flexDirection: "row" }}>
-              <TouchableOpacity
-                onPress={() => router.push("/login")}
-                style={{
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  backgroundColor: "#0070f3",
-                  borderRadius: 8,
-                }}
-              >
-                <Text
-                  style={{ color: "#fff", fontSize: 14, fontWeight: "600" }}
-                >
-                  Iniciar Sesión
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => router.push("/registrarse")}
-                style={{
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  backgroundColor: "#28a745",
-                  borderRadius: 8,
-                  marginLeft: 8,
-                }}
-              >
-                <Text
-                  style={{ color: "#fff", fontSize: 14, fontWeight: "600" }}
-                >
-                  Registrarse
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <View style={{ flexDirection: "row" }}></View>
           </View>
           <View style={styles.divider} />
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {/* Live Stream */}
-            <View style={styles.contentZone}>
-              <Text style={styles.title}>¡Programación en vivo!</Text>
-              <Text style={styles.subtitle}>TRANSMISIÓN EN VIVO</Text>
-              <View style={styles.videoContainer}>
+            <View style={styles.liveSection}>
+              <Text style={styles.liveTitle}>🎥 ¡Programación en vivo!</Text>
+              <Text style={styles.liveSubtitle}>TRANSMISIÓN EN VIVO</Text>
+              <View style={styles.liveVideoContainer}>
                 <WebView
                   source={{
                     uri: "https://www.youtube.com/watch?v=osD2ZVGomjw&t=5s",
@@ -294,34 +262,54 @@ export default function Home() {
                 />
               </View>
             </View>
-            <View style={styles.divider} />
+
+          
             {/* Weekly Programming */}
-            <View style={styles.programCarouselWrapper}>
-              <Text style={styles.sectionTitle}>Programación Semanal</Text>
-              <ScrollView
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.programCarousel}
-              >
-                {programs.map((p, i) => (
-                  <View
-                    key={i}
-                    style={[styles.programCard, { width: width * 0.7 }]}
-                  >
-                    <Image source={p.image} style={styles.programImage} />
-                    <View style={styles.programInfo}>
-                      <Text style={styles.programTitle}>{p.title}</Text>
-                      <Text style={styles.programTime}>{p.time}</Text>
+            <View style={styles.sectionBoxEnhanced}>
+              <Text style={styles.sectionTitleEnhanced}>
+                📅 Programación Semanal
+              </Text>
+              <Text style={styles.sectionNoteEnhanced}>
+                Aquí encontrarás la grilla de programas transmitidos.{"\n"}
+                <Text style={{ fontWeight: "bold" }}>
+                  ¡Registrate para verlos en vivo!
+                </Text>
+              </Text>
+
+              <View style={styles.programCarouselWrapper}>
+                <ScrollView
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.programCarousel}
+                >
+                  {programs.map((p, i) => (
+                    <View
+                      key={i}
+                      style={[styles.programCard, { width: width * 0.7 }]}
+                    >
+                      <Image source={p.image} style={styles.programImage} />
+                      <View style={styles.programInfo}>
+                        <Text style={styles.programTitle}>{p.title}</Text>
+                        <Text style={styles.programTime}>{p.time}</Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
-              </ScrollView>
+                  ))}
+                </ScrollView>
+              </View>
             </View>
-            <View style={styles.divider} />
+
+            
             {/* Top Videos */}
-            <View style={styles.contentZone}>
-              <Text style={styles.title}>Lo más visto</Text>
+            <View style={styles.sectionBoxEnhanced}>
+              <Text style={styles.sectionTitleEnhanced}>🔥 Lo más visto</Text>
+              <Text style={styles.sectionNoteEnhanced}>
+                Esta sección contiene los videos más vistos.{"\n"}
+                <Text style={{ fontWeight: "bold" }}>
+                  Iniciá sesión para acceder al contenido completo.
+                </Text>
+              </Text>
+
               {loading ? (
                 <ActivityIndicator size="large" color="#0070f3" />
               ) : (
@@ -350,35 +338,47 @@ export default function Home() {
                 </ScrollView>
               )}
             </View>
-            <View style={styles.divider} />
+
+            
             {/* Sponsors Carousel */}
-            <View style={styles.contentZone}>
-              <Text style={styles.title}>Auspiciantes</Text>
+            <View style={styles.sponsorBox}>
+              <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
               <ScrollView
                 ref={sliderRef}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.sponsorCarousel}
+                contentContainerStyle={styles.sponsorCarouselEnhanced}
               >
                 {sponsors.map((s, i) => (
                   <View
                     key={i}
-                    style={[styles.sponsorCard, { width: width * 0.8 }]}
+                    style={[styles.sponsorCardEnhanced, { width: width * 0.8 }]}
                   >
-                    <Image source={s.image} style={styles.sponsorImage} />
-                    <Text style={styles.sponsorName}>{s.name}</Text>
-                    <Text style={styles.sponsorInfo}>{s.info}</Text>
+                    <Image
+                      source={s.image}
+                      style={styles.sponsorImageEnhanced}
+                    />
+                    <Text style={styles.sponsorNameEnhanced}>{s.name}</Text>
+                    <Text style={styles.sponsorInfoEnhanced}>{s.info}</Text>
                   </View>
                 ))}
               </ScrollView>
             </View>
-            <View style={styles.divider} />
-            <View style={styles.section}>
-              <Text style={styles.title}>Podcast por categoría</Text>
+
+         
+            <View style={styles.sectionBoxEnhancedPodcast}>
+              <Text style={styles.sectionTitleEnhancedPodcast}>🎧 Podcast</Text>
+              <Text style={styles.sectionNoteEnhancedPodcast}>
+                Escuchá nuestros podcast educativos y de entretenimiento.{"\n"}
+                <Text style={{ fontWeight: "bold" }}>
+                  Iniciá sesión para explorarlos.
+                </Text>
+              </Text>
+
               {categories.map((cat, idx) => (
-                <View key={idx}>
+                <View key={idx} style={{ marginTop: 16 }}>
                   <Text style={styles.subtitle}>{cat.name}</Text>
-                  <ScrollView horizontal>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {cat.episodes.map((podcast, idx2) => (
                       <TouchableOpacity
                         key={idx2}
@@ -400,34 +400,38 @@ export default function Home() {
                 </View>
               ))}
             </View>
-            <View style={styles.divider} />
-            <View style={styles.section}>
-              <Text style={styles.title}>Noticias</Text>
+
+            
+            <View style={styles.sectionBoxEnhancedNews}>
+              <Text style={styles.sectionTitleEnhancedNews}>📰 Noticias</Text>
               {newsList.map((news, idx) => (
                 <TouchableOpacity
                   key={idx}
-                  style={styles.newsCard}
+                  style={styles.newsCardEnhanced}
                   onPress={() =>
                     handleOpenNews("https://www.elancasti.com.ar/")
                   }
                 >
                   <Image
                     source={{ uri: news.image }}
-                    style={styles.newsImage}
+                    style={styles.newsImageEnhanced}
                   />
-                  <View style={styles.newsContent}>
-                    <Text style={styles.newsTitle}>{news.title}</Text>
-                    <Text style={styles.newsExcerpt} numberOfLines={2}>
+                  <View style={styles.newsContentEnhanced}>
+                    <Text style={styles.newsTitleEnhanced}>{news.title}</Text>
+                    <Text style={styles.newsExcerptEnhanced} numberOfLines={2}>
                       {news.summary}
                     </Text>
                   </View>
                 </TouchableOpacity>
               ))}
             </View>
-            <View style={styles.divider} />
-            <View style={styles.socialBlock}>
-              <Text style={styles.socialTitle}>Seguinos en redes Sociales</Text>
-              <View style={styles.socialIconsRow}>
+
+            
+            <View style={styles.socialBox}>
+              <Text style={styles.socialTitleEnhanced}>
+                📲 Seguinos en redes sociales
+              </Text>
+              <View style={styles.socialIconsRowEnhanced}>
                 <TouchableOpacity
                   onPress={() =>
                     Linking.openURL("https://facebook.com/prpstudio")
@@ -435,7 +439,7 @@ export default function Home() {
                 >
                   <Image
                     source={require("../assets/facebook1.png")}
-                    style={styles.socialIcon}
+                    style={styles.socialIconEnhanced}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -445,7 +449,7 @@ export default function Home() {
                 >
                   <Image
                     source={require("../assets/instagram.png")}
-                    style={styles.socialIcon}
+                    style={styles.socialIconEnhanced}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -455,7 +459,7 @@ export default function Home() {
                 >
                   <Image
                     source={require("../assets/youtube.png")}
-                    style={styles.socialIcon}
+                    style={styles.socialIconEnhanced}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -465,7 +469,7 @@ export default function Home() {
                 >
                   <Image
                     source={require("../assets/twitch1.png")}
-                    style={styles.socialIcon}
+                    style={styles.socialIconEnhanced}
                   />
                 </TouchableOpacity>
               </View>
