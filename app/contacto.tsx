@@ -1,33 +1,15 @@
 import MenuHamburguesa from "@/components/MenuHamburguesa";
-import { useFocusEffect } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
-import React, { useCallback } from "react";
+import React from "react";
 import {
-  BackHandler,
   Image,
   Linking,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import styles from "../styles/contacto";
-
-
-const router = useRouter();
-
-useFocusEffect(
-  useCallback(() => {
-    const onBackPress = () => {
-      router.replace('/'); // ← Volver a la Home sin dejar historial
-      return true;
-    };
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => subscription.remove();
-  }, [])
-);
 
 
 export default function Contacto() {
