@@ -1,8 +1,10 @@
+// app/login.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   ImageBackground,
@@ -18,13 +20,14 @@ import styles from "../styles/login";
 export default function Login() {
   const router = useRouter();
   const [dni, setDni] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleLogin = async () => {
     if (!dni.trim()) {
       Alert.alert("Error", "Por favor ingresa tu DNI");
       return;
     }
-
+    setLoading(true);
     try {
       console.log("🔍 Verificando DNI en Firestore:", dni);
       const userRef = doc(db, "usuarios", dni);
@@ -33,13 +36,14 @@ export default function Login() {
         Alert.alert("Error", "Usuario inexistente");
         return;
       }
-      // Opcional: guardar DNI para Home
       await AsyncStorage.setItem("loggedDNI", dni);
       console.log("✅ loggedDNI guardado en AsyncStorage:", dni);
       router.replace("/home");
     } catch (err) {
       console.error("❌ Error al iniciar sesión:", err);
       Alert.alert("Error", "No se pudo iniciar sesión");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,35 +71,43 @@ export default function Login() {
           autoCapitalize="none"
           value={dni}
           onChangeText={setDni}
+          editable={!loading}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Entrar</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Entrar</Text>
+          )}
         </TouchableOpacity>
 
-        
-
+       
         <Text style={{ marginTop: 24, textAlign: "center", color: "#fff" }}>
           Sigue nuestras redes sociales:
         </Text>
         <View style={{ flexDirection: "row", justifyContent: "space-around", width: "80%", alignSelf: "center", marginTop: 16 }}>
-          <TouchableOpacity onPress={() => { /* Abrir Facebook */ }}>
+          <TouchableOpacity disabled={loading}>
             <Image source={require("../assets/facebook1.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { /* Abrir YouTube */ }}>
+          <TouchableOpacity disabled={loading}>
             <Image source={require("../assets/youtube.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { /* Abrir Instagram */ }}>
+          <TouchableOpacity disabled={loading}>
             <Image source={require("../assets/instagram.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { /* Abrir Twitch */ }}>
+          <TouchableOpacity disabled={loading}>
             <Image source={require("../assets/twitch1.png")} style={{ width: 50, height: 50 }} resizeMode="contain" />
           </TouchableOpacity>
         </View>
 
         <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 24, width: "100%" }}>
           <Text style={{ color: "#fff", fontSize: 20 }}>Contacto:</Text>
-          <TouchableOpacity onPress={() => { /* Abrir WhatsApp */ }} style={{ marginLeft: 8 }}>
+          <TouchableOpacity disabled={loading} style={{ marginLeft: 8 }}>
             <Image source={require("../assets/logowsp.png")} style={{ width: 40, height: 40 }} resizeMode="contain" />
           </TouchableOpacity>
         </View>
