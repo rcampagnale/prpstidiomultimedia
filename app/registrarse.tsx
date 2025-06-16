@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   ImageBackground,
   SafeAreaView,
   ScrollView,
@@ -36,6 +37,18 @@ export default function Registrarse() {
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [telefono, setTelefono] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const backAction = () => {
+      router.replace('/homeVisitante');
+      return true;
+    };
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    return () => subscription.remove();
+  }, []);
 
   // Forzar red en Firestore
   useEffect(() => {

@@ -1,7 +1,9 @@
 // app/quienesSomos.tsx
 import MenuHamburguesa from "@/components/MenuHamburguesa";
-import React from "react";
+import { router } from "expo-router";
+import React, { useEffect } from "react";
 import {
+  BackHandler,
   Image,
   Linking,
   ScrollView,
@@ -11,6 +13,18 @@ import {
   View
 } from "react-native";
 import styles from "../styles/quienesSomos";
+
+useEffect(() => {
+    const backAction = () => {
+      router.replace('/home');
+      return true;
+    };
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    return () => subscription.remove();
+  }, []);
 
 export default function QuienesSomos() {
   

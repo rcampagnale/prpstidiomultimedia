@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -34,6 +35,19 @@ export default function DatosPersonales() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
+
+
+  useEffect(() => {
+    const backAction = () => {
+      router.replace('/home');
+      return true;
+    };
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    return () => subscription.remove();
+  }, []);
 
   // Cargar datos del usuario
   useEffect(() => {

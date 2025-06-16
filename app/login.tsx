@@ -2,10 +2,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   Image,
   ImageBackground,
   SafeAreaView,
@@ -50,6 +51,17 @@ export default function Login() {
   const handleRegister = () => {
     Alert.alert("Registro", "Funcionalidad de registro pendiente");
   };
+  useEffect(() => {
+    const backAction = () => {
+      router.replace('/homeVisitante');
+      return true;
+    };
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    return () => subscription.remove();
+  }, []);
 
   return (
     <ImageBackground
