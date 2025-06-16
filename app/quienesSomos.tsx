@@ -28,6 +28,7 @@ export default function QuienesSomos() {
           style={styles.logo}
           resizeMode="contain"
         />
+        
         <Text style={styles.title}>¿Quiénes somos?</Text>
         <Text style={styles.paragraph}>
           Somos un equipo comprometido con la educación, la innovación
