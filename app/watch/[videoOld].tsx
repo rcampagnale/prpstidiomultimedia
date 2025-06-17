@@ -1,3 +1,4 @@
+// app/watch/[videoOld].tsx
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -5,16 +6,16 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styles from '../../styles/[videoId]';
+import styles from '../../styles/[videoOld]';
 
 export default function WatchVideo() {
   const router = useRouter();
-  const { videoId } = useLocalSearchParams();
+  const { videoOld } = useLocalSearchParams<{ videoOld: string }>();
 
-  if (!videoId || typeof videoId !== 'string') {
+  if (!videoOld) {
     return (
       <SafeAreaView style={styles.center}>
         <Text style={styles.errorText}>No se encontró el video.</Text>
@@ -22,7 +23,7 @@ export default function WatchVideo() {
     );
   }
 
-  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1&rel=0`;
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoOld}?autoplay=1&controls=1&modestbranding=1&rel=0`;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,7 +41,7 @@ export default function WatchVideo() {
           allowsInlineMediaPlayback
           startInLoadingState
           renderLoading={() => (
-            <ActivityIndicator size="large" color="#0070f3" style={styles.loader} />
+            <ActivityIndicator size="large" style={styles.loader} />
           )}
         />
       </View>
