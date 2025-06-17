@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
+  ActivityIndicator,
   BackHandler,
   Dimensions,
   Image,
@@ -51,20 +52,26 @@ const newsList = [
   },
 ];
 
+import { db } from "@/firebase";
+import { doc, getDoc } from "@firebase/firestore";
+import { useState } from "react";
+
 export default function HomeVisitante() {
   const router = useRouter();
   const sliderRef = useRef<ScrollView>(null);
-   useEffect(() => {
-      const backAction = () => {
-        router.replace("/homeVisitante");
-        return true;
-      };
-      const subscription = BackHandler.addEventListener(
-        "hardwareBackPress",
-        backAction
-      );
-      return () => subscription.remove();
-    }, []);
+  const [liveLoading, setLiveLoading] = useState(true);
+  const [liveUrl, setLiveUrl] = useState<string | null>(null);
+  useEffect(() => {
+    const backAction = () => {
+      router.replace("/homeVisitante");
+      return true;
+    };
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     let idx = 0;
@@ -81,6 +88,31 @@ export default function HomeVisitante() {
   const handleOpenNews = (url: string) => {
     console.log("Open news:", url);
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const vivoRef = doc(db, "programa_vivo", "vivo");
+        const snap = await getDoc(vivoRef);
+        if (snap.exists()) {
+          const data = snap.data() as { link?: string };
+          console.log("Link crudo:", snap.data().link);
+          if (data.link) {
+            // Asegúrate de que en Firestore el valor NO incluya comillas extra
+            setLiveUrl(data.link);
+          } else {
+            console.warn("⚠️ El campo 'link' está vacío en programa_vivo/vivo");
+          }
+        } else {
+          console.warn("⚠️ No existe el documento programa_vivo/vivo");
+        }
+      } catch (err) {
+        console.error("Error obteniendo link vivo:", err);
+      } finally {
+        setLiveLoading(false);
+      }
+    })();
+  }, []);
 
   return (
     <>
@@ -147,12 +179,30 @@ export default function HomeVisitante() {
               <Text style={styles.liveTitle}>🎥 ¡Programación en vivo!</Text>
               <Text style={styles.liveSubtitle}>TRANSMISIÓN EN VIVO</Text>
               <View style={styles.liveVideoContainer}>
-                <WebView
-                  source={{
-                    uri: "https://www.youtube.com/watch?v=osD2ZVGomjw&t=5s",
-                  }}
-                  style={{ flex: 1, borderRadius: 12 }}
-                />
+                {liveLoading ? (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0070f3"
+                    style={{ flex: 1 }}
+                  />
+                ) : liveUrl ? (
+                  <WebView
+                    source={{ uri: liveUrl }}
+                    style={{ flex: 1 }}
+                    javaScriptEnabled
+                    domStorageEnabled
+                    allowsInlineMediaPlayback
+                    startInLoadingState
+                    renderLoading={() => (
+                      <ActivityIndicator
+                        size="large"
+                        style={{ flex: 1, alignSelf: "center" }}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Text style={styles.errorText}>En vivo no disponible.</Text>
+                )}
               </View>
             </View>
 
@@ -241,7 +291,9 @@ export default function HomeVisitante() {
               <View style={styles.socialIconsRowEnhanced}>
                 <TouchableOpacity
                   onPress={() =>
-                    Linking.openURL("https://www.facebook.com/profile.php?id=61575238830833")
+                    Linking.openURL(
+                      "https://www.facebook.com/profile.php?id=61575238830833"
+                    )
                   }
                 >
                   <Image

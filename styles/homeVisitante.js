@@ -520,5 +520,12 @@ roundImage: {
   borderColor: '#0070f3',
   marginBottom: 1,
 },
+errorText: {
+    color: "#ff3333",
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 12,
+    fontWeight: "bold",
+  },
 
 });
