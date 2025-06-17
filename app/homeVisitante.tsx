@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
+  BackHandler,
   Dimensions,
   Image,
   ImageBackground,
@@ -53,6 +54,17 @@ const newsList = [
 export default function HomeVisitante() {
   const router = useRouter();
   const sliderRef = useRef<ScrollView>(null);
+   useEffect(() => {
+      const backAction = () => {
+        router.replace("/homeVisitante");
+        return true;
+      };
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+      return () => subscription.remove();
+    }, []);
 
   useEffect(() => {
     let idx = 0;

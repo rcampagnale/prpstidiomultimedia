@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "prpstudiomultimedia",
-    "slug": "instead",
+    "slug": "prpstudiomultimedia",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.jpeg",
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/logo.jpeg",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.prpstudiomultimedia.prpstudiomultimedia"
     },
     "web": {
       "bundler": "metro",
@@ -44,7 +45,12 @@
       "firebaseProjectId": "prpstudiomultimediaapp",
       "firebaseStorageBucket": "prpstudiomultimediaapp.firebasestorage.app",
       "firebaseMessagingSenderId": "649777654541",
-      "firebaseAppId": "1:649777654541:web:08b82ae5fe8c13b2955e44"
-    }
+      "firebaseAppId": "1:649777654541:web:08b82ae5fe8c13b2955e44",
+      "router": {},
+      "eas": {
+        "projectId": "8ebfb78a-3ad8-429f-ae60-8514d347081e"
+      }
+    },
+    "owner": "prpstudiomultimedia"
   }
 }
