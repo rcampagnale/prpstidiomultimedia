@@ -1,10 +1,7 @@
 // app/home.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import {
-  doc,
-  getDoc
-} from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -31,6 +28,42 @@ type Video = { id: string; thumbnail: string; title: string };
 
 export default function Home() {
   const router = useRouter();
+  type ProgramItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+  };
+
+  // 2) Estados para la grilla y carga
+  const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
+  const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
+
+  // 3) Suscripción en tiempo real a "programacion_semanal"
+  useEffect(() => {
+    const colRef = collection(db, "programacion_semanal");
+    const unsubscribe = onSnapshot(
+      colRef,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => {
+          const data = doc.data() as any;
+          return {
+            id: doc.id,
+            titulo: data.titulo,
+            descripcion: data.descripcion,
+            imagen: data.imagen,
+          } as ProgramItem;
+        });
+        setWeeklyPrograms(items);
+        setLoadingPrograms(false);
+      },
+      (error) => {
+        console.error("Error snapshot programación semanal:", error);
+        setLoadingPrograms(false);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   // Estado para el link en vivo
   const [liveUrl, setLiveUrl] = useState<string>("");
@@ -61,31 +94,30 @@ export default function Home() {
   }, []);
 
   // en app/home.tsx, reemplaza el useEffect por este:
-useEffect(() => {
-  (async () => {
-    try {
-      const vivoRef = doc(db, "programa_vivo", "vivo");
-      const snap = await getDoc(vivoRef);
-      if (snap.exists()) {
-        const data = snap.data() as { link?: string };
-         console.log("Link crudo:", snap.data().link);
-        if (data.link) {
-          // Asegúrate de que en Firestore el valor NO incluya comillas extra
-          setLiveUrl(data.link);
+  useEffect(() => {
+    (async () => {
+      try {
+        const vivoRef = doc(db, "programa_vivo", "vivo");
+        const snap = await getDoc(vivoRef);
+        if (snap.exists()) {
+          const data = snap.data() as { link?: string };
+         
+          if (data.link) {
+            // Asegúrate de que en Firestore el valor NO incluya comillas extra
+            setLiveUrl(data.link);
+          } else {
+            console.warn("⚠️ El campo 'link' está vacío en programa_vivo/vivo");
+          }
         } else {
-          console.warn("⚠️ El campo 'link' está vacío en programa_vivo/vivo");
+          console.warn("⚠️ No existe el documento programa_vivo/vivo");
         }
-      } else {
-        console.warn("⚠️ No existe el documento programa_vivo/vivo");
+      } catch (err) {
+        console.error("Error obteniendo link vivo:", err);
+      } finally {
+        setLiveLoading(false);
       }
-    } catch (err) {
-      console.error("Error obteniendo link vivo:", err);
-    } finally {
-      setLiveLoading(false);
-    }
-  })();
-}, []);
-
+    })();
+  }, []);
 
   // Auto-scroll sponsors
   useEffect(() => {
@@ -102,15 +134,39 @@ useEffect(() => {
 
   // Datos estáticos de ejemplo
   const programs = [
-    { title: "Programa 1", time: "Lunes 10:00 AM", image: require("../assets/programa1.jpeg") },
-    { title: "Programa 2", time: "Martes 12:00 PM", image: require("../assets/programa1.jpeg") },
-    { title: "Programa 3", time: "Miércoles 6:00 PM", image: require("../assets/programa1.jpeg") },
+    {
+      title: "Programa 1",
+      time: "Lunes 10:00 AM",
+      image: require("../assets/programa1.jpeg"),
+    },
+    {
+      title: "Programa 2",
+      time: "Martes 12:00 PM",
+      image: require("../assets/programa1.jpeg"),
+    },
+    {
+      title: "Programa 3",
+      time: "Miércoles 6:00 PM",
+      image: require("../assets/programa1.jpeg"),
+    },
   ];
 
   const sponsors = [
-    { name: "Auspiciador A", info: "Descripción A", image: require("../assets/fondohome2.jpeg") },
-    { name: "Auspiciador B", info: "Descripción B", image: require("../assets/fondohome3.jpeg") },
-    { name: "Auspiciador C", info: "Descripción C", image: require("../assets/fondohome4.jpeg") },
+    {
+      name: "Auspiciador A",
+      info: "Descripción A",
+      image: require("../assets/fondohome2.jpeg"),
+    },
+    {
+      name: "Auspiciador B",
+      info: "Descripción B",
+      image: require("../assets/fondohome3.jpeg"),
+    },
+    {
+      name: "Auspiciador C",
+      info: "Descripción C",
+      image: require("../assets/fondohome4.jpeg"),
+    },
   ];
 
   // Datos estáticos para categorías de podcast
@@ -118,21 +174,34 @@ useEffect(() => {
     {
       name: "Educativos",
       episodes: [
-        { title: "Aprendiendo React Native", audioUrl: "https://example.com/audio1.mp3" },
-        { title: "Firebase para principiantes", audioUrl: "https://example.com/audio2.mp3" },
+        {
+          title: "Aprendiendo React Native",
+          audioUrl: "https://example.com/audio1.mp3",
+        },
+        {
+          title: "Firebase para principiantes",
+          audioUrl: "https://example.com/audio2.mp3",
+        },
       ],
     },
     {
       name: "Entretenimiento",
       episodes: [
-        { title: "Historias divertidas", audioUrl: "https://example.com/audio3.mp3" },
-        { title: "Entrevista con un comediante", audioUrl: "https://example.com/audio4.mp3" },
+        {
+          title: "Historias divertidas",
+          audioUrl: "https://example.com/audio3.mp3",
+        },
+        {
+          title: "Entrevista con un comediante",
+          audioUrl: "https://example.com/audio4.mp3",
+        },
       ],
     },
   ];
 
   // Manejadores dummy...
-  const handlePlayPodcast = (audioUrl: string) => console.log("Play podcast:", audioUrl);
+  const handlePlayPodcast = (audioUrl: string) =>
+    console.log("Play podcast:", audioUrl);
   const handleOpenNews = (url: string) => console.log("Open news:", url);
   const handlePlay = (id: string) => console.log("Play video:", id);
 
@@ -141,29 +210,45 @@ useEffect(() => {
     {
       title: "Nueva programación semanal",
       summary: "Descubre los nuevos programas que se suman a nuestra grilla.",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
     },
     {
       title: "Entrevista exclusiva",
-      summary: "No te pierdas la entrevista con el invitado especial de esta semana.",
-      image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+      summary:
+        "No te pierdas la entrevista con el invitado especial de esta semana.",
+      image:
+        "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
     },
     {
       title: "Podcast destacado",
       summary: "Escucha el podcast más popular del mes en nuestra plataforma.",
-      image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
     },
   ];
 
   return (
     <>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-      <ImageBackground source={require("../assets/programa1.jpeg")} style={{ flex: 1 }}>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
+      <ImageBackground
+        source={require("../assets/programa1.jpeg")}
+        style={{ flex: 1 }}
+      >
         <SafeAreaView style={styles.container}>
           <MenuHamburguesa />
 
           {/* Header */}
-          <View style={[styles.header, { justifyContent: "space-between", paddingHorizontal: 8 }]}>
+          <View
+            style={[
+              styles.header,
+              { justifyContent: "space-between", paddingHorizontal: 8 },
+            ]}
+          >
             <Text style={styles.greeting}>
               Bienvenido{userName ? `, ${userName}` : ""}
             </Text>
@@ -177,7 +262,11 @@ useEffect(() => {
               <Text style={styles.liveSubtitle}>TRANSMISIÓN EN VIVO</Text>
               <View style={styles.liveVideoContainer}>
                 {liveLoading ? (
-                  <ActivityIndicator size="large" color="#0070f3" style={{ flex: 1 }} />
+                  <ActivityIndicator
+                    size="large"
+                    color="#0070f3"
+                    style={{ flex: 1 }}
+                  />
                 ) : liveUrl ? (
                   <WebView
                     source={{ uri: liveUrl }}
@@ -187,7 +276,10 @@ useEffect(() => {
                     allowsInlineMediaPlayback
                     startInLoadingState
                     renderLoading={() => (
-                      <ActivityIndicator size="large" style={{ flex: 1, alignSelf: "center" }} />
+                      <ActivityIndicator
+                        size="large"
+                        style={{ flex: 1, alignSelf: "center" }}
+                      />
                     )}
                   />
                 ) : (
@@ -209,28 +301,36 @@ useEffect(() => {
               </Text>
 
               <View style={styles.programCarouselWrapper}>
-                <ScrollView
-                  horizontal
-                  pagingEnabled
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.programCarousel}
-                >
-                  {programs.map((p, i) => (
-                    <View
-                      key={i}
-                      style={[styles.programCard, { width: width * 0.7 }]}
-                    >
-                      <Image source={p.image} style={styles.programImage} />
-                      <View style={styles.programInfo}>
-                        <Text style={styles.programTitle}>{p.title}</Text>
-                        <Text style={styles.programTime}>{p.time}</Text>
+                {loadingPrograms ? (
+                  <ActivityIndicator size="large" />
+                ) : (
+                  <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.programCarousel}
+                  >
+                    {weeklyPrograms.map((p, i) => (
+                      <View
+                        key={p.id}
+                        style={[styles.programCard, { width: width * 0.7 }]}
+                      >
+                        <Image
+                          source={{ uri: p.imagen }}
+                          style={styles.programImage}
+                        />
+                        <View style={styles.programInfo}>
+                          <Text style={styles.programTitle}>{p.titulo}</Text>
+                          <Text style={styles.programTime}>
+                            {p.descripcion}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  ))}
-                </ScrollView>
+                    ))}
+                  </ScrollView>
+                )}
               </View>
             </View>
-
             {/* Top Videos */}
             <View style={styles.sectionBoxEnhanced}>
               <Text style={styles.sectionTitleEnhanced}>🔥 Lo más visto</Text>

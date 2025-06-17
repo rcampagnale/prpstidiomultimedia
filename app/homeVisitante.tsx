@@ -53,7 +53,7 @@ const newsList = [
 ];
 
 import { db } from "@/firebase";
-import { doc, getDoc } from "@firebase/firestore";
+import { collection, doc, getDoc, onSnapshot } from "@firebase/firestore";
 import { useState } from "react";
 
 export default function HomeVisitante() {
@@ -61,6 +61,44 @@ export default function HomeVisitante() {
   const sliderRef = useRef<ScrollView>(null);
   const [liveLoading, setLiveLoading] = useState(true);
   const [liveUrl, setLiveUrl] = useState<string | null>(null);
+
+  type ProgramItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+  };
+
+  // 2) Estados para la grilla y carga
+  const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
+  const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
+
+  // 3) Suscripción en tiempo real a "programacion_semanal"
+  useEffect(() => {
+    const colRef = collection(db, "programacion_semanal");
+    const unsubscribe = onSnapshot(
+      colRef,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => {
+          const data = doc.data() as any;
+          return {
+            id: doc.id,
+            titulo: data.titulo,
+            descripcion: data.descripcion,
+            imagen: data.imagen,
+          } as ProgramItem;
+        });
+        setWeeklyPrograms(items);
+        setLoadingPrograms(false);
+      },
+      (error) => {
+        console.error("Error snapshot programación semanal:", error);
+        setLoadingPrograms(false);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     const backAction = () => {
       router.replace("/homeVisitante");
@@ -96,8 +134,7 @@ export default function HomeVisitante() {
         const snap = await getDoc(vivoRef);
         if (snap.exists()) {
           const data = snap.data() as { link?: string };
-          console.log("Link crudo:", snap.data().link);
-          if (data.link) {
+           if (data.link) {
             // Asegúrate de que en Firestore el valor NO incluya comillas extra
             setLiveUrl(data.link);
           } else {
@@ -216,6 +253,37 @@ export default function HomeVisitante() {
                   ¡Registrate para verlos en vivo!
                 </Text>
               </Text>
+
+              <View style={styles.programCarouselWrapper}>
+                {loadingPrograms ? (
+                  <ActivityIndicator size="large" />
+                ) : (
+                  <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.programCarousel}
+                  >
+                    {weeklyPrograms.map((p, i) => (
+                      <View
+                        key={p.id}
+                        style={[styles.programCard, { width: width * 0.7 }]}
+                      >
+                        <Image
+                          source={{ uri: p.imagen }}
+                          style={styles.programImage}
+                        />
+                        <View style={styles.programInfo}>
+                          <Text style={styles.programTitle}>{p.titulo}</Text>
+                          <Text style={styles.programTime}>
+                            {p.descripcion}
+                          </Text>
+                        </View>
+                      </View>
+                    ))}
+                  </ScrollView>
+                )}
+              </View>
             </View>
 
             <View style={styles.sectionBoxEnhanced}>
