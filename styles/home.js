@@ -615,6 +615,13 @@ socialIconEnhanced: {
   shadowRadius: 2,
   elevation: 2,
 },
+errorText: {
+    color: "#ff3333",
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 12,
+    fontWeight: "bold",
+  },
 
 
 });

@@ -1,7 +1,10 @@
 // app/home.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc
+} from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -26,113 +29,65 @@ const { width } = Dimensions.get("window");
 
 type Video = { id: string; thumbnail: string; title: string };
 
-const programs = [
-  {
-    title: "Programa 1",
-    time: "Lunes 10:00 AM",
-    image: require("../assets/programa1.jpeg"),
-  },
-  {
-    title: "Programa 2",
-    time: "Martes 12:00 PM",
-    image: require("../assets/programa1.jpeg"),
-  },
-  {
-    title: "Programa 3",
-    time: "Miércoles 6:00 PM",
-    image: require("../assets/programa1.jpeg"),
-  },
-];
-
-const sponsors = [
-  {
-    name: "Auspiciador A",
-    info: "Descripción A",
-    image: require("../assets/fondohome.jpeg"),
-  },
-  {
-    name: "Auspiciador B",
-    info: "Descripción B",
-    image: require("../assets/fondohome.jpeg"),
-  },
-  {
-    name: "Auspiciador C",
-    info: "Descripción C",
-    image: require("../assets/fondohome.jpeg"),
-  },
-];
-
 export default function Home() {
   const router = useRouter();
+
+  // Estado para el link en vivo
+  const [liveUrl, setLiveUrl] = useState<string>("");
+  const [liveLoading, setLiveLoading] = useState<boolean>(true);
+
+  // Estados para top videos y usuario
   const [loading, setLoading] = useState(true);
   const [videos, setVideos] = useState<Video[]>([]);
-  const sponsorRef = useRef<ScrollView>(null);
-
   const [userName, setUserName] = useState<string>("");
 
+  const sliderRef = useRef<ScrollView>(null);
+
+  // Carga nombre de usuario
   useEffect(() => {
+    (async () => {
+      try {
+        const dni = await AsyncStorage.getItem("loggedDNI");
+        if (!dni) return;
+        const snap = await getDoc(doc(db, "usuarios", dni));
+        if (snap.exists()) {
+          const data = snap.data() as any;
+          setUserName(`${data.nombre} ${data.apellido}`);
+        }
+      } catch (err) {
+        console.error("Error cargando usuario:", err);
+      }
+    })();
+  }, []);
+
+  // en app/home.tsx, reemplaza el useEffect por este:
+useEffect(() => {
   (async () => {
     try {
-      const dni = await AsyncStorage.getItem("loggedDNI");
-      console.log("🔍 DNI obtenido de AsyncStorage:", dni);
-      if (!dni) {
-        console.warn("⚠️ No hay DNI en AsyncStorage");
-        return;
-      }
-      const snap = await getDoc(doc(db, "usuarios", dni));
+      const vivoRef = doc(db, "programa_vivo", "vivo");
+      const snap = await getDoc(vivoRef);
       if (snap.exists()) {
-        const data = snap.data();
-        const fullName = `${data.nombre} ${data.apellido}`;
-        console.log("✅ Usuario cargado desde Firestore:", fullName);
-        setUserName(fullName);
+        const data = snap.data() as { link?: string };
+         console.log("Link crudo:", snap.data().link);
+        if (data.link) {
+          // Asegúrate de que en Firestore el valor NO incluya comillas extra
+          setLiveUrl(data.link);
+        } else {
+          console.warn("⚠️ El campo 'link' está vacío en programa_vivo/vivo");
+        }
       } else {
-        console.warn("⚠️ Documento de usuario no existe en Firestore");
+        console.warn("⚠️ No existe el documento programa_vivo/vivo");
       }
     } catch (err) {
-      console.error("❌ Error cargando usuario:", err);
+      console.error("Error obteniendo link vivo:", err);
+    } finally {
+      setLiveLoading(false);
     }
   })();
 }, []);
 
 
-  // Example program carousel data
-  const programs = [
-    {
-      title: "Programa 1",
-      time: "Lunes 10:00 AM",
-      image: require("../assets/programa1.jpeg"),
-    },
-    {
-      title: "Programa 2",
-      time: "Martes 12:00 PM",
-      image: require("../assets/programa1.jpeg"),
-    },
-    {
-      title: "Programa 3",
-      time: "Miércoles 6:00 PM",
-      image: require("../assets/programa1.jpeg"),
-    },
-  ];
-
-  // Sponsors with auto-scroll
-  const sponsors = [
-    {
-      name: "Auspiciador A",
-      info: "Descripción A",
-      image: require("../assets/fondohome2.jpeg"),
-    },
-    {
-      name: "Auspiciador B",
-      info: "Descripción B",
-      image: require("../assets/fondohome3.jpeg"),
-    },
-    {
-      name: "Auspiciador C",
-      info: "Descripción C",
-      image: require("../assets/fondohome4.jpeg"),
-    },
-  ];
-  const sliderRef = useRef<ScrollView>(null);
+  // Auto-scroll sponsors
   useEffect(() => {
     let idx = 0;
     const interval = setInterval(() => {
@@ -145,108 +100,99 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Dummy categories data for podcasts
+  // Datos estáticos de ejemplo
+  const programs = [
+    { title: "Programa 1", time: "Lunes 10:00 AM", image: require("../assets/programa1.jpeg") },
+    { title: "Programa 2", time: "Martes 12:00 PM", image: require("../assets/programa1.jpeg") },
+    { title: "Programa 3", time: "Miércoles 6:00 PM", image: require("../assets/programa1.jpeg") },
+  ];
+
+  const sponsors = [
+    { name: "Auspiciador A", info: "Descripción A", image: require("../assets/fondohome2.jpeg") },
+    { name: "Auspiciador B", info: "Descripción B", image: require("../assets/fondohome3.jpeg") },
+    { name: "Auspiciador C", info: "Descripción C", image: require("../assets/fondohome4.jpeg") },
+  ];
+
+  // Datos estáticos para categorías de podcast
   const categories = [
     {
-      name: "Educación",
+      name: "Educativos",
       episodes: [
-        {
-          title: "Aprendiendo React Native",
-          cover: "https://placehold.co/100x100",
-          audioUrl: "https://www.example.com/audio1.mp3",
-        },
-        {
-          title: "Tips de programación",
-          cover: "https://placehold.co/100x100",
-          audioUrl: "https://www.example.com/audio2.mp3",
-        },
+        { title: "Aprendiendo React Native", audioUrl: "https://example.com/audio1.mp3" },
+        { title: "Firebase para principiantes", audioUrl: "https://example.com/audio2.mp3" },
       ],
     },
     {
       name: "Entretenimiento",
       episodes: [
-        {
-          title: "Podcast divertido",
-          cover: "https://placehold.co/100x100",
-          audioUrl: "https://www.example.com/audio3.mp3",
-        },
+        { title: "Historias divertidas", audioUrl: "https://example.com/audio3.mp3" },
+        { title: "Entrevista con un comediante", audioUrl: "https://example.com/audio4.mp3" },
       ],
     },
   ];
 
-  // Dummy handler for podcast play
-  const handlePlayPodcast = (audioUrl: string) => {
-    // Implement audio playback logic here
-    console.log("Play podcast:", audioUrl);
-  };
+  // Manejadores dummy...
+  const handlePlayPodcast = (audioUrl: string) => console.log("Play podcast:", audioUrl);
+  const handleOpenNews = (url: string) => console.log("Open news:", url);
+  const handlePlay = (id: string) => console.log("Play video:", id);
 
-  // Dummy news data
+  // Datos estáticos de ejemplo para noticias
   const newsList = [
     {
-      title: "Noticia 1",
-      summary: "Resumen de la noticia 1.",
-      image: "https://placehold.co/120x80",
-      url: "https://www.example.com/noticia1",
+      title: "Nueva programación semanal",
+      summary: "Descubre los nuevos programas que se suman a nuestra grilla.",
+      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
     },
     {
-      title: "Noticia 2",
-      summary: "Resumen de la noticia 2.",
-      image: "https://placehold.co/120x80",
-      url: "https://www.example.com/noticia2",
+      title: "Entrevista exclusiva",
+      summary: "No te pierdas la entrevista con el invitado especial de esta semana.",
+      image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+    },
+    {
+      title: "Podcast destacado",
+      summary: "Escucha el podcast más popular del mes en nuestra plataforma.",
+      image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
     },
   ];
 
-  // Dummy handler for opening news
-  const handleOpenNews = (url: string) => {
-    // Implement navigation or webview logic here
-    console.log("Open news:", url);
-  };
-
-  function handlePlay(id: string): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
-      />
-      <ImageBackground
-        source={require("../assets/programa1.jpeg")}
-        style={{ flex: 1 }}
-      >
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <ImageBackground source={require("../assets/programa1.jpeg")} style={{ flex: 1 }}>
         <SafeAreaView style={styles.container}>
           <MenuHamburguesa />
+
           {/* Header */}
-          <View
-            style={[
-              styles.header,
-              { justifyContent: "space-between", paddingHorizontal: 8 },
-            ]}
-          >
+          <View style={[styles.header, { justifyContent: "space-between", paddingHorizontal: 8 }]}>
             <Text style={styles.greeting}>
               Bienvenido{userName ? `, ${userName}` : ""}
             </Text>
-            <View style={{ flexDirection: "row" }}>
-              {/* Botones u otros elementos */}
-            </View>
           </View>
-
           <View style={styles.divider} />
+
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {/* Live Stream */}
             <View style={styles.liveSection}>
               <Text style={styles.liveTitle}>🎥 ¡Programación en vivo!</Text>
               <Text style={styles.liveSubtitle}>TRANSMISIÓN EN VIVO</Text>
               <View style={styles.liveVideoContainer}>
-                <WebView
-                  source={{
-                    uri: "https://www.youtube.com/watch?v=osD2ZVGomjw&t=5s",
-                  }}
-                  style={{ flex: 1 }}
-                />
+                {liveLoading ? (
+                  <ActivityIndicator size="large" color="#0070f3" style={{ flex: 1 }} />
+                ) : liveUrl ? (
+                  <WebView
+                    source={{ uri: liveUrl }}
+                    style={{ flex: 1 }}
+                    javaScriptEnabled
+                    domStorageEnabled
+                    allowsInlineMediaPlayback
+                    startInLoadingState
+                    renderLoading={() => (
+                      <ActivityIndicator size="large" style={{ flex: 1, alignSelf: "center" }} />
+                    )}
+                  />
+                ) : (
+                  <Text style={styles.errorText}>En vivo no disponible.</Text>
+                )}
               </View>
             </View>
 
