@@ -49,6 +49,7 @@ export default function HomeVisitante() {
   const sliderRef = useRef<ScrollView>(null);
   const [liveLoading, setLiveLoading] = useState(true);
   const [liveUrl, setLiveUrl] = useState<string | null>(null);
+  
 
   type SponsorItem = {
     id: string;
@@ -191,6 +192,46 @@ export default function HomeVisitante() {
         setLiveLoading(false);
       }
     })();
+  }, []);
+
+  // Conductores / Influencers
+  type ConductorItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+    orden: number;
+  };
+
+  const [conductores, setConductores] = useState<ConductorItem[]>([]);
+  const [loadingConductores, setLoadingConductores] = useState<boolean>(true);
+
+  useEffect(() => {
+    const q = query(collection(db, "conductores"), orderBy("orden", "asc"));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs
+          .map((doc) => {
+            const data = doc.data() as any;
+            return {
+              id: doc.id,
+              titulo: data.titulo,
+              descripcion: data.descripcion,
+              imagen: data.imagen,
+              orden: Number(data.orden) || 0,
+            } as ConductorItem;
+          })
+          .sort((a, b) => a.orden - b.orden);
+        setConductores(items);
+        setLoadingConductores(false);
+      },
+      (error) => {
+        console.error("Error snapshot conductores:", error);
+        setLoadingConductores(false);
+      }
+    );
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -337,6 +378,39 @@ export default function HomeVisitante() {
                 </Text>
               </Text>
             </View>
+{/* Conductores / Influencers */}
+<View style={styles.sectionBoxEnhancedNews}>
+  <Text style={styles.sectionTitleEnhancedNews}>🎤 Conductores / Influencers</Text>
+  {loadingConductores ? (
+    <ActivityIndicator
+      size="large"
+      color="#0070f3"
+      style={{ marginVertical: 16 }}
+    />
+  ) : (
+    conductores.map(c => (
+      <TouchableOpacity
+        key={c.id}
+        style={styles.newsCardEnhanced}
+        onPress={() => {}}
+      >
+        <Image
+          source={{ uri: c.imagen }}
+          style={styles.newsImageEnhanced}
+        />
+        <View style={styles.newsContentEnhanced}>
+          <Text style={styles.newsTitleEnhanced}>{c.titulo}</Text>
+          <Text
+            style={styles.newsExcerptEnhanced}
+            numberOfLines={2}
+          >
+            {c.descripcion}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    ))
+  )}
+</View>
 
             {/* Sponsors Carousel */}
             <View style={styles.sponsorBox}>

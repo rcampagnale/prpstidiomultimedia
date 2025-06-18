@@ -1,39 +1,53 @@
 import { Dimensions, StyleSheet } from 'react-native';
-
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    width: width * 0.9,
+    maxHeight: height * 0.8,
+    backgroundColor: '#fdfdfd',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
+    alignItems: 'center',
+    borderLeftWidth: 5,
+    borderLeftColor: '#D35400', 
+    alignSelf: 'center',
   },
   scrollContent: {
-    padding: 16,
-    alignItems: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 24,
   },
   detailImage: {
-    width: width - 32,
-    height: (width - 32) * 0.6,
-    borderRadius: 8,
-    marginBottom: 16,
+    width: width - 100,
+    height: (width - 48) * 0.7,
+    borderRadius: 12,
+    marginBottom: 24,
     resizeMode: 'cover',
+    
   },
   detailTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 12,
     textAlign: 'center',
-    color: '#333',
+    color: '#111',
   },
   detailDesc: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     textAlign: 'justify',
-    color: '#555',
-    marginBottom: 24,
+    color: '#333',
+    marginBottom: 32,
   },
   buttonWrapper: {
     width: '100%',
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
+    
   },
 });
