@@ -27,6 +27,7 @@ import { WebView } from "react-native-webview";
 import MenuHamburguesa from "../components/MenuHamburguesa";
 import { db } from "../firebase";
 import styles from "../styles/home";
+import ModalConductores from "./modalconductores";
 
 // Obtener ancho de pantalla
 const { width } = Dimensions.get("window");
@@ -35,6 +36,47 @@ type Video = { id: string; thumbnail: string; title: string };
 
 export default function Home() {
   const router = useRouter();
+
+  type ConductorItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+    orden: number;
+  };
+
+  const [conductores, setConductores] = useState<ConductorItem[]>([]);
+  const [loadingConductores, setLoadingConductores] = useState(true);
+  const [selectedConductor, setSelectedConductor] =
+    useState<ConductorItem | null>(null);
+
+  useEffect(() => {
+    const q = query(collection(db, "conductores"), orderBy("orden", "asc"));
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs
+          .map((doc) => {
+            const d = doc.data() as any;
+            return {
+              id: doc.id,
+              titulo: d.titulo,
+              descripcion: d.descripcion,
+              imagen: d.imagen,
+              orden: Number(d.orden) || 0,
+            } as ConductorItem;
+          })
+          .sort((a, b) => a.orden - b.orden);
+        setConductores(items);
+        setLoadingConductores(false);
+      },
+      (err) => {
+        console.error("Error snapshot conductores:", err);
+        setLoadingConductores(false);
+      }
+    );
+    return () => unsub();
+  }, []);
 
   type SponsorItem = {
     id: string;
@@ -414,6 +456,38 @@ export default function Home() {
               )}
             </View>
 
+            {/* Conductores */}
+            <View style={styles.sectionBoxEnhancedNews}>
+              <Text style={styles.sectionTitleEnhancedNews}>
+                🎤 Conductores/Influencers
+              </Text>
+              {loadingConductores ? (
+                <ActivityIndicator size="large" color="#0070f3" />
+              ) : (
+                conductores.map((c) => (
+                  <TouchableOpacity
+                    key={c.id}
+                    style={styles.newsCardEnhanced}
+                    onPress={() => setSelectedConductor(c)}
+                  >
+                    <Image
+                      source={{ uri: c.imagen }}
+                      style={styles.newsImageEnhanced}
+                    />
+                    <View style={styles.newsContentEnhanced}>
+                      <Text style={styles.newsTitleEnhanced}>{c.titulo}</Text>
+                      <Text
+                        style={styles.newsExcerptEnhanced}
+                        numberOfLines={2}
+                      >
+                        {c.descripcion}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+
             {/* Sponsors Carousel */}
             <View style={styles.sponsorBox}>
               <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
@@ -555,6 +629,11 @@ export default function Home() {
               </View>
             </View>
           </ScrollView>
+          <ModalConductores
+            visible={!!selectedConductor}
+            conductor={selectedConductor}
+            onClose={() => setSelectedConductor(null)}
+          />
         </SafeAreaView>
       </ImageBackground>
     </>
