@@ -1,7 +1,14 @@
 // app/home.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -28,11 +35,54 @@ type Video = { id: string; thumbnail: string; title: string };
 
 export default function Home() {
   const router = useRouter();
+
+  type SponsorItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string; // URL a la imagen
+    orden: number;
+  };
+
+  const [sponsors, setSponsors] = useState<SponsorItem[]>([]);
+  const [loadingSponsors, setLoadingSponsors] = useState<boolean>(true);
+
+  useEffect(() => {
+    // 1) Crea la query ordenada ascendente por campo "orden"
+    const q = query(collection(db, "auspiciante"), orderBy("orden", "asc"));
+
+    // 2) Escucha en tiempo real
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot: { docs: any[] }) => {
+        const items = snapshot.docs.map((doc) => {
+          const data = doc.data() as any;
+          return {
+            id: doc.id,
+            titulo: data.titulo,
+            descripcion: data.descripcion,
+            imagen: data.imagen,
+            orden: data.orden,
+          } as SponsorItem;
+        });
+        setSponsors(items);
+        setLoadingSponsors(false);
+      },
+      (error) => {
+        console.error("Error snapshot auspiciantes:", error);
+        setLoadingSponsors(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
   type ProgramItem = {
     id: string;
     titulo: string;
     descripcion: string;
     imagen: string;
+    orden: number;
   };
 
   // 2) Estados para la grilla y carga
@@ -41,19 +91,30 @@ export default function Home() {
 
   // 3) Suscripción en tiempo real a "programacion_semanal"
   useEffect(() => {
-    const colRef = collection(db, "programacion_semanal");
+    // 1) Prepara la consulta ordenada por "orden"
+    const q = query(
+      collection(db, "programacion_semanal"),
+      orderBy("orden", "asc")
+    );
+
+    // 2) Suscríbete
     const unsubscribe = onSnapshot(
-      colRef,
+      q,
       (snapshot) => {
-        const items = snapshot.docs.map((doc) => {
-          const data = doc.data() as any;
-          return {
-            id: doc.id,
-            titulo: data.titulo,
-            descripcion: data.descripcion,
-            imagen: data.imagen,
-          } as ProgramItem;
-        });
+        const items = snapshot.docs
+          .map((doc) => {
+            const data = doc.data() as any;
+            return {
+              id: doc.id,
+              titulo: data.titulo,
+              descripcion: data.descripcion,
+              imagen: data.imagen,
+              orden: Number(data.orden) || 0, // fuerza número
+            } as ProgramItem;
+          })
+          // por seguridad, vuelve a ordenar en el cliente
+          .sort((a, b) => a.orden - b.orden);
+
         setWeeklyPrograms(items);
         setLoadingPrograms(false);
       },
@@ -62,6 +123,7 @@ export default function Home() {
         setLoadingPrograms(false);
       }
     );
+
     return () => unsubscribe();
   }, []);
 
@@ -101,7 +163,7 @@ export default function Home() {
         const snap = await getDoc(vivoRef);
         if (snap.exists()) {
           const data = snap.data() as { link?: string };
-         
+
           if (data.link) {
             // Asegúrate de que en Firestore el valor NO incluya comillas extra
             setLiveUrl(data.link);
@@ -148,24 +210,6 @@ export default function Home() {
       title: "Programa 3",
       time: "Miércoles 6:00 PM",
       image: require("../assets/programa1.jpeg"),
-    },
-  ];
-
-  const sponsors = [
-    {
-      name: "Auspiciador A",
-      info: "Descripción A",
-      image: require("../assets/fondohome2.jpeg"),
-    },
-    {
-      name: "Auspiciador B",
-      info: "Descripción B",
-      image: require("../assets/fondohome3.jpeg"),
-    },
-    {
-      name: "Auspiciador C",
-      info: "Descripción C",
-      image: require("../assets/fondohome4.jpeg"),
     },
   ];
 
@@ -373,26 +417,35 @@ export default function Home() {
             {/* Sponsors Carousel */}
             <View style={styles.sponsorBox}>
               <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
-              <ScrollView
-                ref={sliderRef}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.sponsorCarouselEnhanced}
-              >
-                {sponsors.map((s, i) => (
-                  <View
-                    key={i}
-                    style={[styles.sponsorCardEnhanced, { width: width * 0.8 }]}
-                  >
-                    <Image
-                      source={s.image}
-                      style={styles.sponsorImageEnhanced}
-                    />
-                    <Text style={styles.sponsorNameEnhanced}>{s.name}</Text>
-                    <Text style={styles.sponsorInfoEnhanced}>{s.info}</Text>
-                  </View>
-                ))}
-              </ScrollView>
+              {loadingSponsors ? (
+                <ActivityIndicator size="large" color="#0070f3" />
+              ) : (
+                <ScrollView
+                  ref={sliderRef}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.sponsorCarouselEnhanced}
+                >
+                  {sponsors.map((s) => (
+                    <View
+                      key={s.id}
+                      style={[
+                        styles.sponsorCardEnhanced,
+                        { width: width * 0.8 },
+                      ]}
+                    >
+                      <Image
+                        source={{ uri: s.imagen }}
+                        style={styles.sponsorImageEnhanced}
+                      />
+                      <Text style={styles.sponsorNameEnhanced}>{s.titulo}</Text>
+                      <Text style={styles.sponsorInfoEnhanced}>
+                        {s.descripcion}
+                      </Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              )}
             </View>
 
             <View style={styles.sectionBoxEnhancedPodcast}>

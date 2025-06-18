@@ -18,25 +18,6 @@ import { WebView } from "react-native-webview";
 import styles from "../styles/homeVisitante";
 
 const { width } = Dimensions.get("window");
-
-const sponsors = [
-  {
-    name: "Auspiciador A",
-    info: "Descripción A",
-    image: require("../assets/fondohome2.jpeg"),
-  },
-  {
-    name: "Auspiciador B",
-    info: "Descripción B",
-    image: require("../assets/fondohome3.jpeg"),
-  },
-  {
-    name: "Auspiciador C",
-    info: "Descripción C",
-    image: require("../assets/fondohome4.jpeg"),
-  },
-];
-
 const newsList = [
   {
     title: "Noticia 1",
@@ -53,7 +34,14 @@ const newsList = [
 ];
 
 import { db } from "@/firebase";
-import { collection, doc, getDoc, onSnapshot } from "@firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "@firebase/firestore";
 import { useState } from "react";
 
 export default function HomeVisitante() {
@@ -62,23 +50,25 @@ export default function HomeVisitante() {
   const [liveLoading, setLiveLoading] = useState(true);
   const [liveUrl, setLiveUrl] = useState<string | null>(null);
 
-  type ProgramItem = {
+  type SponsorItem = {
     id: string;
     titulo: string;
     descripcion: string;
-    imagen: string;
+    imagen: string; // URL a la imagen
+    orden: number;
   };
 
-  // 2) Estados para la grilla y carga
-  const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
-  const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
+  const [sponsors, setSponsors] = useState<SponsorItem[]>([]);
+  const [loadingSponsors, setLoadingSponsors] = useState<boolean>(true);
 
-  // 3) Suscripción en tiempo real a "programacion_semanal"
   useEffect(() => {
-    const colRef = collection(db, "programacion_semanal");
+    // 1) Crea la query ordenada ascendente por campo "orden"
+    const q = query(collection(db, "auspiciante"), orderBy("orden", "asc"));
+
+    // 2) Escucha en tiempo real
     const unsubscribe = onSnapshot(
-      colRef,
-      (snapshot) => {
+      q,
+      (snapshot: { docs: any[] }) => {
         const items = snapshot.docs.map((doc) => {
           const data = doc.data() as any;
           return {
@@ -86,18 +76,70 @@ export default function HomeVisitante() {
             titulo: data.titulo,
             descripcion: data.descripcion,
             imagen: data.imagen,
-          } as ProgramItem;
+            orden: data.orden,
+          } as SponsorItem;
         });
-        setWeeklyPrograms(items);
-        setLoadingPrograms(false);
+        setSponsors(items);
+        setLoadingSponsors(false);
       },
       (error) => {
-        console.error("Error snapshot programación semanal:", error);
-        setLoadingPrograms(false);
+        console.error("Error snapshot auspiciantes:", error);
+        setLoadingSponsors(false);
       }
     );
+
     return () => unsubscribe();
   }, []);
+
+ type ProgramItem = {
+     id: string;
+     titulo: string;
+     descripcion: string;
+     imagen: string;
+     orden: number;
+   };
+ 
+   // 2) Estados para la grilla y carga
+   const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
+   const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
+ 
+   // 3) Suscripción en tiempo real a "programacion_semanal"
+   useEffect(() => {
+     // 1) Prepara la consulta ordenada por "orden"
+     const q = query(
+       collection(db, "programacion_semanal"),
+       orderBy("orden", "asc")
+     );
+ 
+     // 2) Suscríbete
+     const unsubscribe = onSnapshot(
+       q,
+       (snapshot) => {
+         const items = snapshot.docs
+           .map((doc) => {
+             const data = doc.data() as any;
+             return {
+               id: doc.id,
+               titulo: data.titulo,
+               descripcion: data.descripcion,
+               imagen: data.imagen,
+               orden: Number(data.orden) || 0, // fuerza número
+             } as ProgramItem;
+           })
+           // por seguridad, vuelve a ordenar en el cliente
+           .sort((a, b) => a.orden - b.orden);
+ 
+         setWeeklyPrograms(items);
+         setLoadingPrograms(false);
+       },
+       (error) => {
+         console.error("Error snapshot programación semanal:", error);
+         setLoadingPrograms(false);
+       }
+     );
+ 
+     return () => unsubscribe();
+   }, []);
 
   useEffect(() => {
     const backAction = () => {
@@ -134,7 +176,7 @@ export default function HomeVisitante() {
         const snap = await getDoc(vivoRef);
         if (snap.exists()) {
           const data = snap.data() as { link?: string };
-           if (data.link) {
+          if (data.link) {
             // Asegúrate de que en Firestore el valor NO incluya comillas extra
             setLiveUrl(data.link);
           } else {
@@ -296,28 +338,38 @@ export default function HomeVisitante() {
               </Text>
             </View>
 
+            {/* Sponsors Carousel */}
             <View style={styles.sponsorBox}>
               <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
-              <ScrollView
-                ref={sliderRef}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.sponsorCarouselEnhanced}
-              >
-                {sponsors.map((s, i) => (
-                  <View
-                    key={i}
-                    style={[styles.sponsorCardEnhanced, { width: width * 0.8 }]}
-                  >
-                    <Image
-                      source={s.image}
-                      style={styles.sponsorImageEnhanced}
-                    />
-                    <Text style={styles.sponsorNameEnhanced}>{s.name}</Text>
-                    <Text style={styles.sponsorInfoEnhanced}>{s.info}</Text>
-                  </View>
-                ))}
-              </ScrollView>
+              {loadingSponsors ? (
+                <ActivityIndicator size="large" color="#0070f3" />
+              ) : (
+                <ScrollView
+                  ref={sliderRef}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.sponsorCarouselEnhanced}
+                >
+                  {sponsors.map((s) => (
+                    <View
+                      key={s.id}
+                      style={[
+                        styles.sponsorCardEnhanced,
+                        { width: width * 0.8 },
+                      ]}
+                    >
+                      <Image
+                        source={{ uri: s.imagen }}
+                        style={styles.sponsorImageEnhanced}
+                      />
+                      <Text style={styles.sponsorNameEnhanced}>{s.titulo}</Text>
+                      <Text style={styles.sponsorInfoEnhanced}>
+                        {s.descripcion}
+                      </Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              )}
             </View>
 
             <View style={styles.sectionBoxEnhancedPodcast}>
