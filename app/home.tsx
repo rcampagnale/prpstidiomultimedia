@@ -37,6 +37,30 @@ type Video = { id: string; thumbnail: string; title: string };
 export default function Home() {
   const router = useRouter();
 
+  // 1) Estado para controlar participaciones
+  const [participating, setParticipating] = useState<string[]>([]);
+
+  // 2) Handler para alternar participación
+  const handleParticipate = (id: string) => {
+    setParticipating((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
+    );
+  };
+
+  // 3) Datos de ejemplo (o reemplaza por lo que traigas de Firestore)
+  const raffles = [
+    {
+      id: "s1",
+      nombre: "Sorteo Auriculares",
+      imagen: require("../assets/fondohome3.jpeg"),
+    },
+    {
+      id: "s2",
+      nombre: "Sorteo Membresía VIP",
+      imagen: require("../assets/fondohome3.jpeg"),
+    },
+  ];
+
   type ConductorItem = {
     id: string;
     titulo: string;
@@ -578,6 +602,42 @@ export default function Home() {
                 </ScrollView>
               )}
             </View>
+            <View style={styles.sectionBoxEnhanced}>
+              <Text style={styles.sectionTitleEnhanced}>🔒 Zona Exclusiva</Text>
+              <Text style={styles.sectionNoteEnhanced}>
+                Participá de nuestros sorteos exclusivos para usuarios
+                registrados.
+              </Text>
+
+              {raffles.map((raffle) => (
+                <View key={raffle.id} style={styles.raffleRow}>
+                  {/* Imagen tappable */}
+                  <TouchableOpacity
+                    onPress={() => handleParticipate(raffle.id)}
+                  >
+                    <Image source={raffle.imagen} style={styles.raffleImage} />
+                  </TouchableOpacity>
+
+                  {/* Detalle y badge */}
+                  <View style={styles.raffleDetail}>
+                    <Text style={styles.raffleTitle}>{raffle.nombre}</Text>
+                    {participating.includes(raffle.id) && (
+                      <Text style={styles.participatingBadge}>
+                        ✔️ Estás participando
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              ))}
+
+              {/* En caso de lista vacía */}
+              {raffles.length === 0 && (
+                <Text style={styles.emptyText}>
+                  No hay sorteos disponibles.
+                </Text>
+              )}
+            </View>
+
             <View style={styles.socialBox}>
               <Text style={styles.socialTitleEnhanced}>
                 📲 Seguinos en redes sociales

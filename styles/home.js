@@ -338,5 +338,57 @@ export default StyleSheet.create({
     marginVertical: 12,
     fontWeight: 'bold',
   },
+  raffleCard: {
+  backgroundColor: '#fff',
+  borderRadius: 8,
+  padding: 8,
+  alignItems: 'center',
+},
+raffleImage: {
+  width: '100%',
+  height: 100,
+  borderRadius: 8,
+},
+raffleTitle: {
+  marginTop: 8,
+  fontSize: 14,
+  textAlign: 'center',
+},
+ emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginVertical: 12,
+  },
+  raffleRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginVertical: 8,
+},
+raffleImage: {
+  width: 80,
+  height: 80,
+  borderRadius: 8,
+},
+raffleDetail: {
+  flex: 1,
+  marginLeft: 12,
+},
+raffleTitle: {
+  fontSize: 16,
+  fontWeight: '600',
+},
+participatingBadge: {
+  marginTop: 4,
+  color: 'green',
+  fontSize: 14,
+  fontWeight: '500',
+},
+emptyText: {
+  fontSize: 16,
+  color: '#666',
+  textAlign: 'center',
+  marginVertical: 12,
+},
 });
 
