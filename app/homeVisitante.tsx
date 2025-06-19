@@ -49,7 +49,6 @@ export default function HomeVisitante() {
   const sliderRef = useRef<ScrollView>(null);
   const [liveLoading, setLiveLoading] = useState(true);
   const [liveUrl, setLiveUrl] = useState<string | null>(null);
-  
 
   type SponsorItem = {
     id: string;
@@ -92,55 +91,55 @@ export default function HomeVisitante() {
     return () => unsubscribe();
   }, []);
 
- type ProgramItem = {
-     id: string;
-     titulo: string;
-     descripcion: string;
-     imagen: string;
-     orden: number;
-   };
- 
-   // 2) Estados para la grilla y carga
-   const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
-   const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
- 
-   // 3) Suscripción en tiempo real a "programacion_semanal"
-   useEffect(() => {
-     // 1) Prepara la consulta ordenada por "orden"
-     const q = query(
-       collection(db, "programacion_semanal"),
-       orderBy("orden", "asc")
-     );
- 
-     // 2) Suscríbete
-     const unsubscribe = onSnapshot(
-       q,
-       (snapshot) => {
-         const items = snapshot.docs
-           .map((doc) => {
-             const data = doc.data() as any;
-             return {
-               id: doc.id,
-               titulo: data.titulo,
-               descripcion: data.descripcion,
-               imagen: data.imagen,
-               orden: Number(data.orden) || 0, // fuerza número
-             } as ProgramItem;
-           })
-           // por seguridad, vuelve a ordenar en el cliente
-           .sort((a, b) => a.orden - b.orden);
- 
-         setWeeklyPrograms(items);
-         setLoadingPrograms(false);
-       },
-       (error) => {
-         console.error("Error snapshot programación semanal:", error);
-         setLoadingPrograms(false);
-       }
-     );
- 
-     return () => unsubscribe();
-   }, []);
+  type ProgramItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+    orden: number;
+  };
+
+  // 2) Estados para la grilla y carga
+  const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
+  const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
+
+  // 3) Suscripción en tiempo real a "programacion_semanal"
+  useEffect(() => {
+    // 1) Prepara la consulta ordenada por "orden"
+    const q = query(
+      collection(db, "programacion_semanal"),
+      orderBy("orden", "asc")
+    );
+
+    // 2) Suscríbete
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs
+          .map((doc) => {
+            const data = doc.data() as any;
+            return {
+              id: doc.id,
+              titulo: data.titulo,
+              descripcion: data.descripcion,
+              imagen: data.imagen,
+              orden: Number(data.orden) || 0, // fuerza número
+            } as ProgramItem;
+          })
+          // por seguridad, vuelve a ordenar en el cliente
+          .sort((a, b) => a.orden - b.orden);
+
+        setWeeklyPrograms(items);
+        setLoadingPrograms(false);
+      },
+      (error) => {
+        console.error("Error snapshot programación semanal:", error);
+        setLoadingPrograms(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const backAction = () => {
@@ -254,7 +253,7 @@ export default function HomeVisitante() {
               ]}
             >
               <Image
-                source={require("../assets/logo.jpeg")} // reemplazá por tu ruta real
+                source={require("../assets/logo.jpeg")}
                 style={styles.roundImage}
               />
               <Text style={styles.greeting}>Bienvenido</Text>
@@ -326,6 +325,28 @@ export default function HomeVisitante() {
               </View>
             </View>
 
+            <View style={styles.sectionBoxEnhancedNews}>
+              <Text style={styles.sectionTitleEnhancedNews}>📰 Noticias</Text>
+              {newsList.map((news, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={styles.newsCardEnhanced}
+                  onPress={() => handleOpenNews(news.url)}
+                >
+                  <Image
+                    source={{ uri: news.image }}
+                    style={styles.newsImageEnhanced}
+                  />
+                  <View style={styles.newsContentEnhanced}>
+                    <Text style={styles.newsTitleEnhanced}>{news.title}</Text>
+                    <Text style={styles.newsExcerptEnhanced} numberOfLines={2}>
+                      {news.summary}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+
             <View style={styles.sectionBoxEnhanced}>
               <Text style={styles.sectionTitleEnhanced}>
                 📅 Programación Semanal
@@ -378,41 +399,52 @@ export default function HomeVisitante() {
                 </Text>
               </Text>
             </View>
-{/* Conductores / Influencers */}
-<View style={styles.sectionBoxEnhancedNews}>
-  <Text style={styles.sectionTitleEnhancedNews}>🎤 Conductores / Influencers</Text>
-  {loadingConductores ? (
-    <ActivityIndicator
-      size="large"
-      color="#0070f3"
-      style={{ marginVertical: 16 }}
-    />
-  ) : (
-    conductores.map(c => (
-      <TouchableOpacity
-        key={c.id}
-        style={styles.newsCardEnhanced}
-        onPress={() => {}}
-      >
-        <Image
-          source={{ uri: c.imagen }}
-          style={styles.newsImageEnhanced}
-        />
-        <View style={styles.newsContentEnhanced}>
-          <Text style={styles.newsTitleEnhanced}>{c.titulo}</Text>
-          <Text
-            style={styles.newsExcerptEnhanced}
-            numberOfLines={2}
-          >
-            {c.descripcion}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    ))
-  )}
-</View>
+            {/* Conductores / Influencers */}
+            <View style={styles.sectionBoxEnhancedNews}>
+              <Text style={styles.sectionTitleEnhancedNews}>
+                🎤 Conductores / Influencers
+              </Text>
+              {loadingConductores ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#0070f3"
+                  style={{ marginVertical: 16 }}
+                />
+              ) : (
+                conductores.map((c) => (
+                  <TouchableOpacity
+                    key={c.id}
+                    style={styles.newsCardEnhanced}
+                    onPress={() => {}}
+                  >
+                    <Image
+                      source={{ uri: c.imagen }}
+                      style={styles.newsImageEnhanced}
+                    />
+                    <View style={styles.newsContentEnhanced}>
+                      <Text style={styles.newsTitleEnhanced}>{c.titulo}</Text>
+                      <Text
+                        style={styles.newsExcerptEnhanced}
+                        numberOfLines={2}
+                      >
+                        {c.descripcion}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
 
-            {/* Sponsors Carousel */}
+            <View style={styles.sectionBoxEnhancedPodcast}>
+              <Text style={styles.sectionTitleEnhancedPodcast}>🎧 Podcast</Text>
+              <Text style={styles.sectionNoteEnhancedPodcast}>
+                Escuchá nuestros podcast educativos y de entretenimiento.{"\n"}
+                <Text style={{ fontWeight: "bold" }}>
+                  Iniciá sesión para explorarlos.
+                </Text>
+              </Text>
+            </View>
+           
             <View style={styles.sponsorBox}>
               <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
               {loadingSponsors ? (
@@ -445,39 +477,6 @@ export default function HomeVisitante() {
                 </ScrollView>
               )}
             </View>
-
-            <View style={styles.sectionBoxEnhancedPodcast}>
-              <Text style={styles.sectionTitleEnhancedPodcast}>🎧 Podcast</Text>
-              <Text style={styles.sectionNoteEnhancedPodcast}>
-                Escuchá nuestros podcast educativos y de entretenimiento.{"\n"}
-                <Text style={{ fontWeight: "bold" }}>
-                  Iniciá sesión para explorarlos.
-                </Text>
-              </Text>
-            </View>
-
-            <View style={styles.sectionBoxEnhancedNews}>
-              <Text style={styles.sectionTitleEnhancedNews}>📰 Noticias</Text>
-              {newsList.map((news, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  style={styles.newsCardEnhanced}
-                  onPress={() => handleOpenNews(news.url)}
-                >
-                  <Image
-                    source={{ uri: news.image }}
-                    style={styles.newsImageEnhanced}
-                  />
-                  <View style={styles.newsContentEnhanced}>
-                    <Text style={styles.newsTitleEnhanced}>{news.title}</Text>
-                    <Text style={styles.newsExcerptEnhanced} numberOfLines={2}>
-                      {news.summary}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-
             <View style={styles.socialBox}>
               <Text style={styles.socialTitleEnhanced}>
                 📲 Seguinos en redes sociales

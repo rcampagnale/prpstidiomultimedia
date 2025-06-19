@@ -373,6 +373,29 @@ export default function Home() {
                 )}
               </View>
             </View>
+            <View style={styles.sectionBoxEnhancedNews}>
+              <Text style={styles.sectionTitleEnhancedNews}>📰 Noticias</Text>
+              {newsList.map((news, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={styles.newsCardEnhanced}
+                  onPress={() =>
+                    handleOpenNews("https://www.elancasti.com.ar/")
+                  }
+                >
+                  <Image
+                    source={{ uri: news.image }}
+                    style={styles.newsImageEnhanced}
+                  />
+                  <View style={styles.newsContentEnhanced}>
+                    <Text style={styles.newsTitleEnhanced}>{news.title}</Text>
+                    <Text style={styles.newsExcerptEnhanced} numberOfLines={2}>
+                      {news.summary}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
 
             {/* Weekly Programming */}
             <View style={styles.sectionBoxEnhanced}>
@@ -488,40 +511,6 @@ export default function Home() {
               )}
             </View>
 
-            {/* Sponsors Carousel */}
-            <View style={styles.sponsorBox}>
-              <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
-              {loadingSponsors ? (
-                <ActivityIndicator size="large" color="#0070f3" />
-              ) : (
-                <ScrollView
-                  ref={sliderRef}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.sponsorCarouselEnhanced}
-                >
-                  {sponsors.map((s) => (
-                    <View
-                      key={s.id}
-                      style={[
-                        styles.sponsorCardEnhanced,
-                        { width: width * 0.8 },
-                      ]}
-                    >
-                      <Image
-                        source={{ uri: s.imagen }}
-                        style={styles.sponsorImageEnhanced}
-                      />
-                      <Text style={styles.sponsorNameEnhanced}>{s.titulo}</Text>
-                      <Text style={styles.sponsorInfoEnhanced}>
-                        {s.descripcion}
-                      </Text>
-                    </View>
-                  ))}
-                </ScrollView>
-              )}
-            </View>
-
             <View style={styles.sectionBoxEnhancedPodcast}>
               <Text style={styles.sectionTitleEnhancedPodcast}>🎧 Podcast</Text>
               <Text style={styles.sectionNoteEnhancedPodcast}>
@@ -556,31 +545,39 @@ export default function Home() {
                 </View>
               ))}
             </View>
-
-            <View style={styles.sectionBoxEnhancedNews}>
-              <Text style={styles.sectionTitleEnhancedNews}>📰 Noticias</Text>
-              {newsList.map((news, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  style={styles.newsCardEnhanced}
-                  onPress={() =>
-                    handleOpenNews("https://www.elancasti.com.ar/")
-                  }
+            {/* Sponsors Carousel */}
+            <View style={styles.sponsorBox}>
+              <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
+              {loadingSponsors ? (
+                <ActivityIndicator size="large" color="#0070f3" />
+              ) : (
+                <ScrollView
+                  ref={sliderRef}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.sponsorCarouselEnhanced}
                 >
-                  <Image
-                    source={{ uri: news.image }}
-                    style={styles.newsImageEnhanced}
-                  />
-                  <View style={styles.newsContentEnhanced}>
-                    <Text style={styles.newsTitleEnhanced}>{news.title}</Text>
-                    <Text style={styles.newsExcerptEnhanced} numberOfLines={2}>
-                      {news.summary}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+                  {sponsors.map((s) => (
+                    <View
+                      key={s.id}
+                      style={[
+                        styles.sponsorCardEnhanced,
+                        { width: width * 0.8 },
+                      ]}
+                    >
+                      <Image
+                        source={{ uri: s.imagen }}
+                        style={styles.sponsorImageEnhanced}
+                      />
+                      <Text style={styles.sponsorNameEnhanced}>{s.titulo}</Text>
+                      <Text style={styles.sponsorInfoEnhanced}>
+                        {s.descripcion}
+                      </Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              )}
             </View>
-
             <View style={styles.socialBox}>
               <Text style={styles.socialTitleEnhanced}>
                 📲 Seguinos en redes sociales
