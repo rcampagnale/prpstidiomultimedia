@@ -37,29 +37,46 @@ type Video = { id: string; thumbnail: string; title: string };
 export default function Home() {
   const router = useRouter();
 
-  // 1) Estado para controlar participaciones
+  // 1) Estado para los sorteos y carga
+  const [raffles, setRaffles] = useState<
+    { id: string; titulo: string; imagen: string }[]
+  >([]);
+  const [loadingRaffles, setLoadingRaffles] = useState(true);
+
+  // 2) Estado para controlar participaciones
   const [participating, setParticipating] = useState<string[]>([]);
 
-  // 2) Handler para alternar participación
+  // 3) Handler para alternar participación
   const handleParticipate = (id: string) => {
     setParticipating((prev) =>
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
 
-  // 3) Datos de ejemplo (o reemplaza por lo que traigas de Firestore)
-  const raffles = [
-    {
-      id: "s1",
-      nombre: "Sorteo Auriculares",
-      imagen: require("../assets/fondohome3.jpeg"),
-    },
-    {
-      id: "s2",
-      nombre: "Sorteo Membresía VIP",
-      imagen: require("../assets/fondohome3.jpeg"),
-    },
-  ];
+  // 4) Carga en tiempo real desde Firestore (colección "sorteo")
+  useEffect(() => {
+    const q = query(collection(db, "sorteo"), orderBy("orden", "asc"));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => {
+          const d = doc.data() as any;
+          return {
+            id: doc.id,
+            titulo: d.titulo,
+            imagen: d.imagen,
+          };
+        });
+        setRaffles(items);
+        setLoadingRaffles(false);
+      },
+      (err) => {
+        console.error("Error snapshot sorteo:", err);
+        setLoadingRaffles(false);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   type ConductorItem = {
     id: string;
@@ -603,35 +620,49 @@ export default function Home() {
               )}
             </View>
             <View style={styles.sectionBoxEnhanced}>
-              <Text style={styles.sectionTitleEnhanced}>🎁 Zona Exclusiva</Text>
+              <View style={{ alignItems: "center" }}>
+                <Text style={styles.sectionTitleEnhanced}>
+                  🎁 Zona Exclusiva
+                </Text>
+              </View>
               <Text style={styles.sectionNoteEnhanced}>
                 Participá de nuestros sorteos exclusivos para usuarios
                 registrados.
               </Text>
 
-              {raffles.map((raffle) => (
-                <View key={raffle.id} style={styles.raffleRow}>
-                  {/* Imagen tappable */}
-                  <TouchableOpacity
-                    onPress={() => handleParticipate(raffle.id)}
-                  >
-                    <Image source={raffle.imagen} style={styles.raffleImage} />
-                  </TouchableOpacity>
+              {loadingRaffles ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#0070f3"
+                  style={{ marginVertical: 16 }}
+                />
+              ) : raffles.length > 0 ? (
+                <ScrollView>
+                  {raffles.map((raffle) => (
+                    <View key={raffle.id} style={styles.raffleRow}>
+                      {/* Imagen tappable */}
+                      <TouchableOpacity
+                        onPress={() => handleParticipate(raffle.id)}
+                      >
+                        <Image
+                          source={{ uri: raffle.imagen }}
+                          style={styles.raffleImage}
+                        />
+                      </TouchableOpacity>
 
-                  {/* Detalle y badge */}
-                  <View style={styles.raffleDetail}>
-                    <Text style={styles.raffleTitle}>{raffle.nombre}</Text>
-                    {participating.includes(raffle.id) && (
-                      <Text style={styles.participatingBadge}>
-                        ✔️ Estás participando
-                      </Text>
-                    )}
-                  </View>
-                </View>
-              ))}
-
-              {/* En caso de lista vacía */}
-              {raffles.length === 0 && (
+                      {/* Detalle y badge */}
+                      <View style={styles.raffleDetail}>
+                        <Text style={styles.raffleTitle}>{raffle.titulo}</Text>
+                        {participating.includes(raffle.id) && (
+                          <Text style={styles.participatingBadge}>
+                            ✔️ Estás participando
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  ))}
+                </ScrollView>
+              ) : (
                 <Text style={styles.emptyText}>
                   No hay sorteos disponibles.
                 </Text>

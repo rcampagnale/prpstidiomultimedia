@@ -76,7 +76,7 @@ export default StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     borderLeftWidth: 5,
-    borderLeftColor: '#0070f3',
+    borderLeftColor: 'hsl(265, 83%, 57%)',
   },
   sectionTitleEnhanced: {
     fontSize: 22,
