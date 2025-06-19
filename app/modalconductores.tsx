@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import {
+  Alert,
   Button,
-  Dimensions,
   Image,
   Linking,
   Modal,
@@ -10,8 +10,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import styles from '../styles/modalconductores';
+} from "react-native";
+import styles from "../styles/modalconductores";
 
 type ConductorItem = {
   id: string;
@@ -19,8 +19,8 @@ type ConductorItem = {
   descripcion: string;
   imagen: string;
   orden: number;
-  facebook?: string;      // URL de Facebook desde Firestore
-  instagram?: string;     // URL de Instagram desde Firestore
+  facebook?: string;
+  instagram?: string;
 };
 
 interface ModalConductoresProps {
@@ -29,21 +29,36 @@ interface ModalConductoresProps {
   onClose: () => void;
 }
 
-const { width } = Dimensions.get('window');
-
-export default function ModalConductores({ visible, conductor, onClose }: ModalConductoresProps) {
+export default function ModalConductores({
+  visible,
+  conductor,
+  onClose,
+}: ModalConductoresProps) {
   if (!conductor) return null;
 
-  // URLs extraídas de las propiedades del conductor
-  const facebookUrl = conductor.facebook ?? '';
-  const instagramUrl = conductor.instagram ?? '';
+  const facebookUrl = conductor.facebook ?? "";
+  const instagramUrl = conductor.instagram ?? "";
+
+  const openLink = async (url: string) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("URL no válida", `No se puede abrir: ${url}`);
+      }
+    } catch (err) {
+      console.error("Error al abrir URL:", err);
+      Alert.alert("Error", "Ocurrió un problema al abrir el enlace.");
+    }
+  };
 
   return (
     <Modal
       visible={visible}
       animationType="slide"
       onRequestClose={onClose}
-      transparent
+      transparent={true}
     >
       <SafeAreaView style={styles.overlay}>
         <View style={styles.container}>
@@ -54,25 +69,50 @@ export default function ModalConductores({ visible, conductor, onClose }: ModalC
             />
             <Text style={styles.detailTitle}>{conductor.titulo}</Text>
             <Text style={styles.detailDesc}>{conductor.descripcion}</Text>
-            {/* Botones de redes sociales dinámicos */}
+
             <View style={styles.socialRow}>
               {facebookUrl ? (
-                <TouchableOpacity onPress={() => Linking.openURL(facebookUrl)}>
+                <TouchableOpacity onPress={() => openLink(facebookUrl)}>
                   <Image
-                    source={require('../assets/facebook1.png')}
+                    source={require("../assets/facebook1.png")}
                     style={styles.socialIcon}
                   />
                 </TouchableOpacity>
               ) : null}
               {instagramUrl ? (
-                <TouchableOpacity onPress={() => Linking.openURL(instagramUrl)}>
+                <TouchableOpacity onPress={() => openLink(instagramUrl)}>
                   <Image
-                    source={require('../assets/instagram.png')}
+                    source={require("../assets/instagram.png")}
                     style={styles.socialIcon}
                   />
                 </TouchableOpacity>
               ) : null}
             </View>
+
+            <View style={styles.socialBox}>
+              <Text style={styles.socialTitle}>
+                📲 Sígueme en mis redes sociales
+              </Text>
+              <View style={styles.socialIconsRow}>
+                <TouchableOpacity
+                  onPress={() => openLink("https://facebook.com/tuPerfil")}
+                >
+                  <Image
+                    source={require("../assets/facebook1.png")}
+                    style={styles.socialIconEnhanced}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => openLink("https://instagram.com/tuPerfil")}
+                >
+                  <Image
+                    source={require("../assets/instagram.png")}
+                    style={styles.socialIconEnhanced}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
             <View style={styles.buttonWrapper}>
               <Button title="Cerrar" onPress={onClose} />
             </View>

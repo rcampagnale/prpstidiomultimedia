@@ -9,8 +9,8 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   container: {
-    width: width * 0.9,      // ajuste de tamaño: 80% del ancho de pantalla
-    maxHeight: height * 0.6,  // ajuste de tamaño: 60% de la altura de pantalla
+    width: width * 0.9,      // 90% del ancho de pantalla
+    maxHeight: height * 0.6, // 60% de la altura de pantalla
     backgroundColor: 'rgb(248, 248, 248)',
     borderRadius: 12,
     padding: 20,
@@ -52,18 +52,46 @@ export default StyleSheet.create({
   },
   buttonWrapper: {
     width: '100%',
-    paddingHorizontal: 0,
+    paddingHorizontal: 100,
+    marginTop: 16,
   },
   socialRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-around',
-  width: '100%',
-  marginTop: 24,
-},
-socialIcon: {
-  width: 40,
-  height: 40,
-  resizeMode: 'contain',
-},
-
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 16,
+  },
+  socialIcon: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  // Bloque fijo Redes Sociales
+  socialBox: {
+    width: '100%',
+   backgroundColor: 'rgba(255, 255, 255, 0.28)',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 16,
+    alignItems: 'center',
+    borderBottomWidth: 5,
+    borderBottomColor: '#3b5998',
+  },
+  socialTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#3b5998',
+    marginBottom: 12,
+  },
+  socialIconsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  socialIconEnhanced: {
+    width: 35,
+    height: 35,
+    marginHorizontal: 8,
+    resizeMode: 'contain',
+  },
 });
