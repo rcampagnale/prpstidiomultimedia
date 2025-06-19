@@ -54,4 +54,16 @@ export default StyleSheet.create({
     width: '100%',
     paddingHorizontal: 0,
   },
+  socialRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  width: '100%',
+  marginTop: 24,
+},
+socialIcon: {
+  width: 40,
+  height: 40,
+  resizeMode: 'contain',
+},
+
 });
