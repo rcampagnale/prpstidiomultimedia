@@ -2,10 +2,16 @@ import { Dimensions, StyleSheet } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)', // semitransparente para el fondo detrás del modal
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
-    width: width * 0.9,
-    maxHeight: height * 0.8,
-    backgroundColor: '#fdfdfd',
+    width: width * 0.9,      // ajuste de tamaño: 80% del ancho de pantalla
+    maxHeight: height * 0.6,  // ajuste de tamaño: 60% de la altura de pantalla
+    backgroundColor: 'rgb(248, 248, 248)',
     borderRadius: 12,
     padding: 20,
     marginVertical: 24,
@@ -16,7 +22,7 @@ export default StyleSheet.create({
     elevation: 2,
     alignItems: 'center',
     borderLeftWidth: 5,
-    borderLeftColor: '#D35400', 
+    borderLeftColor: '#D35400',
     alignSelf: 'center',
   },
   scrollContent: {
@@ -24,12 +30,11 @@ export default StyleSheet.create({
     paddingHorizontal: 24,
   },
   detailImage: {
-    width: width - 100,
-    height: (width - 48) * 0.7,
+    width: width * 0.7,
+    height: (width * 0.7) * 0.7,
     borderRadius: 12,
     marginBottom: 24,
     resizeMode: 'cover',
-    
   },
   detailTitle: {
     fontSize: 26,
@@ -48,6 +53,5 @@ export default StyleSheet.create({
   buttonWrapper: {
     width: '100%',
     paddingHorizontal: 0,
-    
   },
 });
