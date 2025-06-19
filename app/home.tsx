@@ -603,7 +603,7 @@ export default function Home() {
               )}
             </View>
             <View style={styles.sectionBoxEnhanced}>
-              <Text style={styles.sectionTitleEnhanced}>🔒 Zona Exclusiva</Text>
+              <Text style={styles.sectionTitleEnhanced}>🎁 Zona Exclusiva</Text>
               <Text style={styles.sectionNoteEnhanced}>
                 Participá de nuestros sorteos exclusivos para usuarios
                 registrados.
