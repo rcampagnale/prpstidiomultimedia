@@ -1,4 +1,3 @@
-// components/MenuHamburguesa.tsx
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
@@ -8,22 +7,25 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+  View
 } from "react-native";
-import styles from "../styles/MenuHamburguesa"; // Archivo de estilos
+import styles from "../styles/MenuHamburguesa";
 
-const { width } = Dimensions.get("window");
-const MENU_WIDTH = width * 0.75;
+// Obtenemos ancho y alto de la pantalla
+type DimensionsType = { width: number; height: number };
+const { width, height } = Dimensions.get("window") as DimensionsType;
+// Altura total para el panel del menú
+const PANEL_HEIGHT = height;
 
 export default function MenuHamburguesa() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const translateX = useRef(new Animated.Value(-MENU_WIDTH)).current;
+  // Animación vertical: desde fuera de la pantalla hasta 0
+  const translateY = useRef(new Animated.Value(-PANEL_HEIGHT)).current;
 
   const toggleMenu = () => {
-    Animated.timing(translateX, {
-      toValue: open ? -MENU_WIDTH : 0,
+    Animated.timing(translateY, {
+      toValue: open ? -PANEL_HEIGHT : 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
@@ -32,7 +34,7 @@ export default function MenuHamburguesa() {
 
   return (
     <>
-      {/* Botón hamburguesa */}
+      {/* Botón para abrir/cerrar menú */}
       <TouchableOpacity onPress={toggleMenu} style={styles.hamburgerButton}>
         <Image
           source={require("../assets/logo.jpeg")}
@@ -41,18 +43,13 @@ export default function MenuHamburguesa() {
         />
       </TouchableOpacity>
 
-      {/* Overlay para interceptar toques cuando el menú está abierto */}
-      {open && (
-        <TouchableWithoutFeedback onPress={toggleMenu}>
-          <View style={styles.overlay} />
-        </TouchableWithoutFeedback>
-      )}
+     
 
-      {/* Panel de menú deslizable */}
+      {/* Panel del menú deslizándose desde arriba */}
       <Animated.View
         style={[
           styles.menuPanel,
-          { transform: [{ translateX }], zIndex: 2 },
+          { transform: [{ translateY }], zIndex: 2 },
         ]}
       >
         <SafeAreaView style={styles.menuContainer}>
@@ -109,4 +106,3 @@ export default function MenuHamburguesa() {
     </>
   );
 }
-

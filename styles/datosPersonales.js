@@ -2,10 +2,9 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
-    padding: 24,
-    paddingTop: 80,
-    backgroundColor: '#fff',
     flexGrow: 1,
+    padding: 24,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
@@ -18,8 +17,8 @@ export default StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#444',
-    marginBottom: 4,
     marginTop: 12,
+    marginBottom: 4,
   },
   input: {
     borderWidth: 1,
@@ -29,6 +28,14 @@ export default StyleSheet.create({
     paddingHorizontal: 14,
     fontSize: 16,
     backgroundColor: '#f9f9f9',
+  },
+  inputError: {
+    borderColor: '#f00',
+  },
+  errorText: {
+    color: '#f00',
+    fontSize: 12,
+    marginTop: 4,
   },
   button: {
     marginTop: 30,
@@ -44,9 +51,8 @@ export default StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#000',
+    width: '100%',
     marginVertical: 15,
-    alignSelf: 'stretch',
-    marginHorizontal: -24,
   },
 });

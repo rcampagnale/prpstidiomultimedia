@@ -1,16 +1,15 @@
 import { Dimensions, StyleSheet } from 'react-native';
 
-// Calcula el ancho del menú en base al 75% del ancho de pantalla
-const { width,height  } = Dimensions.get('window');
-const MENU_WIDTH = width * 0.75;
+// Dimensiones de pantalla
+const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
   hamburgerButton: {
     padding: 12,
     position: 'absolute',
-    top: 34,
-    left: 1,
-    zIndex: 1100,             // Asegura que el botón esté encima de todo
+    top: 36,
+    left: 5,
+    zIndex: 1100,
   },
   menuIcon: {
     width: 40,
@@ -21,54 +20,46 @@ export default StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: MENU_WIDTH,
-    height: '150%',
+    width: width,
+    height: 430,  // cubre toda la pantalla
     backgroundColor: '#0070f3',
-    zIndex: 1000,             // Superpone el panel sobre el contenido
+    zIndex: 1000,
     shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 10,            // Elevación para Android
+    elevation: 10,
   },
   menuContainer: {
     flex: 1,
     padding: 16,
-    zIndex: 1001,             // Asegura contenidos dentro del panel estén visibles
-  },
-  closeButton: {
-    alignSelf: 'flex-end',
-    padding: 8,
-    zIndex: 1002,
+    justifyContent: 'flex-start',
   },
   menuItems: {
-    marginTop: 30,
+    marginTop: 80, // ajusta para descender desde el header
   },
   menuItem: {
-    paddingVertical: 42,
-    marginTop: -60,
+    paddingVertical: 12,
+    marginVertical: 4,
   },
   menuText: {
-    fontSize: 15,
-    color: '#333',
+    fontSize: 16,
     color: '#fff',
     fontWeight: 'bold',
   },
   divider: {
-  height: 1,
-  backgroundColor: '#000000',
-  marginVertical: 51,
-  alignSelf: 'stretch',   // fuerza que ocupe todo el ancho
-  marginHorizontal: -12,  // compensa el padding: 24 del container
-},
-overlay: {
+    height: 1,
+    backgroundColor: '#000',
+    width: '100%', // corregido para ocupar todo el ancho
+    marginVertical: 12,
+  },
+  overlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     width: width,
     height: height,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semitransparente para oscurecer el fondo
-    zIndex: 1, // debajo del panel deslizable (que tiene zIndex: 2)
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
   },
-
 });
