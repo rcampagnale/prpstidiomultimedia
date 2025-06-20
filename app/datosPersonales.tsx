@@ -17,7 +17,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
 } from "react-native";
 import { db } from "../firebase";
 import styles from "../styles/datosPersonales";
@@ -36,20 +35,20 @@ type User = {
 export default function DatosPersonales() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [saving, setSaving] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // Para manejar DatePicker
+  // Manejo DatePicker
   const [localDate, setLocalDate] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const onChangeDate = (_: any, selected?: Date) => {
+  const onChangeDate = (_event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === "ios");
-    if (selected && user) {
-      setLocalDate(selected);
+    if (selectedDate && user) {
+      setLocalDate(selectedDate);
       setUser({
         ...user,
-        fechaNacimiento: selected.toISOString().split("T")[0],
+        fechaNacimiento: selectedDate.toISOString().split("T")[0],
       });
     }
   };
@@ -64,7 +63,7 @@ export default function DatosPersonales() {
       backAction
     );
 
-    // Carga inicial de datos
+    // Carga datos
     (async () => {
       try {
         const dniStored = await AsyncStorage.getItem("loggedDNI");
@@ -121,15 +120,15 @@ export default function DatosPersonales() {
   if (!user) return null;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      {/* Barra de estado fija arriba */}
+    <>
       <StatusBar
-        translucent={false}
-        backgroundColor="#fff"
+        translucent
+        backgroundColor="transparent"
         barStyle="dark-content"
       />
+
       <MenuHamburguesa />
-      <View style={styles.divider} />
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -229,6 +228,6 @@ export default function DatosPersonales() {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </>
   );
 }

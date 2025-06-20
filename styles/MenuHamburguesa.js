@@ -49,9 +49,10 @@ export default StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#000',
-    width: '100%', // corregido para ocupar todo el ancho
+    backgroundColor: '#fff',
+    width: '120%', // corregido para ocupar todo el ancho
     marginVertical: 12,
+    marginLeft: -24,
   },
   overlay: {
     position: 'absolute',
