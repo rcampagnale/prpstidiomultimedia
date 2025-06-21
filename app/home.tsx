@@ -33,6 +33,7 @@ import { WebView } from "react-native-webview";
 import MenuHamburguesa from "../components/MenuHamburguesa";
 import { db } from "../firebase";
 import styles from "../styles/home";
+import ModalArtistas from "./modalartistas";
 import ModalConductores from "./modalconductores";
 
 // Obtener ancho de pantalla
@@ -55,6 +56,48 @@ type Video = { id: string; thumbnail: string; title: string };
 
 export default function Home() {
   const router = useRouter();
+
+  type ArtistaItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+    orden: number;
+    nombre: string;
+    descripcion_corta: string;
+  };
+
+  const [artistas, setArtistas] = useState<ArtistaItem[]>([]);
+  const [selectedArtistaIndex, setSelectedArtistaIndex] = useState<
+    number | null
+  >(null);
+  const [loadingArtistas, setLoadingArtistas] = useState<boolean>(true);
+
+  useEffect(() => {
+    const q = query(collection(db, "artistas"), orderBy("orden", "asc"));
+    const unsub = onSnapshot(q, (snapshot) => {
+      setArtistas(
+        snapshot.docs.map((doc) => {
+          const data = doc.data() as any;
+          const d = doc.data();
+          return {
+            id: doc.id,
+            titulo: data.titulo,
+            descripcion: data.descripcion,
+            imagen: data.imagen,
+            orden: Number(data.orden) || 0,
+            nombre: data.nombre ?? data.titulo ?? "",
+            descripcion_corta: data.descripcion_corta ?? "",
+            instagram: d.instagram ?? "",
+            facebook: d.facebook ?? "", 
+          } as ArtistaItem;
+        })
+      );
+      setLoadingArtistas(false);
+    });
+    return () => unsub();
+  }, []);
+
   // 1. Estados para sorteos (al inicio del Home)
   const [sorteos, setSorteos] = useState<
     { id: string; titulo: string; imagen: string }[]
@@ -782,6 +825,42 @@ export default function Home() {
                   </TouchableOpacity>
                 ))
               )}
+            </View>
+            <View style={styles.sectionBoxEnhancedNews}>
+              <Text style={styles.sectionTitleEnhancedNews}>
+                🎨 Artistas/Contratación
+              </Text>
+              {loadingArtistas ? (
+                <ActivityIndicator size="large" color="#0070f3" />
+              ) : (
+                artistas.map((a, idx) => (
+                  <TouchableOpacity
+                    key={a.id}
+                    style={styles.newsCardEnhanced}
+                    onPress={() => setSelectedArtistaIndex(idx)}
+                  >
+                    <Image
+                      source={{ uri: a.imagen }}
+                      style={styles.newsImageEnhanced}
+                    />
+                    <View style={styles.newsContentEnhanced}>
+                      <Text style={styles.newsTitleEnhanced}>{a.nombre}</Text>
+                      <Text
+                        style={styles.newsExcerptEnhanced}
+                        numberOfLines={2}
+                      >
+                        {a.descripcion_corta}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+              <ModalArtistas
+                visible={selectedArtistaIndex !== null}
+                artistas={artistas}
+                initialIndex={selectedArtistaIndex ?? 0}
+                onClose={() => setSelectedArtistaIndex(null)}
+              />
             </View>
 
             <View style={styles.socialBox}>
