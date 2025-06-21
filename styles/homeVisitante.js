@@ -6,7 +6,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 20 : 20,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 20 : 20,
   },
   // Header
   header: {
@@ -96,13 +96,16 @@ export default StyleSheet.create({
     color: '#444',
     lineHeight: 22,
     textAlign: 'center',
+    marginBottom: 8,
   },
-  // Carrusel de programas
+  // Carrusel de programas y videos
   programCarouselWrapper: {
     marginVertical: 16,
   },
   programCarousel: {
     paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   programCard: {
     backgroundColor: '#eee',
@@ -110,10 +113,15 @@ export default StyleSheet.create({
     overflow: 'hidden',
     elevation: 3,
     marginRight: 26,
+    width: width * 0.6,
+    minHeight: 220,
   },
   programImage: {
     width: '100%',
-    height: 220,
+    height: 140,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    backgroundColor: '#ccc',
   },
   programInfo: {
     padding: 12,
@@ -121,6 +129,7 @@ export default StyleSheet.create({
   programTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#222',
   },
   programTime: {
     fontSize: 14,
@@ -167,6 +176,7 @@ export default StyleSheet.create({
     resizeMode: 'cover',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
+    backgroundColor: '#eee',
   },
   newsContentEnhanced: {
     flex: 1,
@@ -219,18 +229,22 @@ export default StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    width: width * 0.8,
+    minHeight: 350,
   },
   sponsorImageEnhanced: {
     width: '100%',
-    height: 300,
+    height: 170,
     borderRadius: 10,
     marginBottom: 12,
+    backgroundColor: '#ccc',
   },
   sponsorNameEnhanced: {
     fontSize: 18,
     fontWeight: '700',
     color: '#222',
     marginBottom: 4,
+    textAlign: 'center',
   },
   sponsorInfoEnhanced: {
     fontSize: 14,
@@ -263,6 +277,42 @@ export default StyleSheet.create({
     fontSize: 15,
     color: '#444',
     lineHeight: 22,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#8E44AD',
+    marginBottom: 8,
+    marginLeft: 8,
+  },
+  card: {
+    width: 140,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    marginRight: 16,
+    marginBottom: 10,
+    overflow: 'hidden',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.09,
+    shadowRadius: 2,
+    alignItems: 'center',
+  },
+  cardImage: {
+    width: 140,
+    height: 90,
+    resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: '#ccc',
+  },
+  cardTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#333',
+    padding: 8,
     textAlign: 'center',
   },
   // Redes sociales final
@@ -316,3 +366,4 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

@@ -1,5 +1,14 @@
+import { db } from "@/firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "@firebase/firestore";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
@@ -18,6 +27,7 @@ import { WebView } from "react-native-webview";
 import styles from "../styles/homeVisitante";
 
 const { width } = Dimensions.get("window");
+
 const newsList = [
   {
     title: "Noticia 1",
@@ -33,16 +43,54 @@ const newsList = [
   },
 ];
 
-import { db } from "@/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  orderBy,
-  query,
-} from "@firebase/firestore";
-import { useState } from "react";
+// LO MÁS VISTO (MOCK)
+const topVideos = [
+  {
+    id: "1",
+    thumbnail: "https://placehold.co/160x90?text=Video+1",
+    title: "Video destacado 1",
+  },
+  {
+    id: "2",
+    thumbnail: "https://placehold.co/160x90?text=Video+2",
+    title: "Video destacado 2",
+  },
+  {
+    id: "3",
+    thumbnail: "https://placehold.co/160x90?text=Video+3",
+    title: "Video destacado 3",
+  },
+];
+
+// PODCASTS (MOCK)
+const categories = [
+  {
+    name: "Educativos",
+    episodes: [
+      {
+        title: "Aprendiendo React Native",
+        audioUrl: "https://example.com/audio1.mp3",
+      },
+      {
+        title: "Firebase para principiantes",
+        audioUrl: "https://example.com/audio2.mp3",
+      },
+    ],
+  },
+  {
+    name: "Entretenimiento",
+    episodes: [
+      {
+        title: "Historias divertidas",
+        audioUrl: "https://example.com/audio3.mp3",
+      },
+      {
+        title: "Entrevista con un comediante",
+        audioUrl: "https://example.com/audio4.mp3",
+      },
+    ],
+  },
+];
 
 export default function HomeVisitante() {
   const router = useRouter();
@@ -50,25 +98,60 @@ export default function HomeVisitante() {
   const [liveLoading, setLiveLoading] = useState(true);
   const [liveUrl, setLiveUrl] = useState<string | null>(null);
 
+  // Auspiciantes
   type SponsorItem = {
     id: string;
     titulo: string;
     descripcion: string;
-    imagen: string; // URL a la imagen
+    imagen: string;
     orden: number;
   };
-
   const [sponsors, setSponsors] = useState<SponsorItem[]>([]);
-  const [loadingSponsors, setLoadingSponsors] = useState<boolean>(true);
+  const [loadingSponsors, setLoadingSponsors] = useState(true);
+
+  // Programación semanal
+  type ProgramItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+    orden: number;
+  };
+  const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
+  const [loadingPrograms, setLoadingPrograms] = useState(true);
+
+  // Conductores
+  type ConductorItem = {
+    id: string;
+    titulo: string;
+    descripcion_corta: string;
+    imagen: string;
+    orden: number;
+  };
+  const [conductores, setConductores] = useState<ConductorItem[]>([]);
+  const [loadingConductores, setLoadingConductores] = useState(true);
+
+  // Artistas
+  type ArtistaItem = {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+    orden: number;
+    nombre: string;
+    descripcion_corta: string;
+  };
+  const [artistas, setArtistas] = useState<ArtistaItem[]>([]);
+  const [loadingArtistas, setLoadingArtistas] = useState(true);
+
+  // --- FIREBASE DATA LOADERS ---
 
   useEffect(() => {
-    // 1) Crea la query ordenada ascendente por campo "orden"
+    // Auspiciantes
     const q = query(collection(db, "auspiciante"), orderBy("orden", "asc"));
-
-    // 2) Escucha en tiempo real
     const unsubscribe = onSnapshot(
       q,
-      (snapshot: { docs: any[] }) => {
+      (snapshot) => {
         const items = snapshot.docs.map((doc) => {
           const data = doc.data() as any;
           return {
@@ -77,7 +160,7 @@ export default function HomeVisitante() {
             descripcion: data.descripcion,
             imagen: data.imagen,
             orden: data.orden,
-          } as SponsorItem;
+          };
         });
         setSponsors(items);
         setLoadingSponsors(false);
@@ -87,31 +170,15 @@ export default function HomeVisitante() {
         setLoadingSponsors(false);
       }
     );
-
     return () => unsubscribe();
   }, []);
 
-  type ProgramItem = {
-    id: string;
-    titulo: string;
-    descripcion: string;
-    imagen: string;
-    orden: number;
-  };
-
-  // 2) Estados para la grilla y carga
-  const [weeklyPrograms, setWeeklyPrograms] = useState<ProgramItem[]>([]);
-  const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
-
-  // 3) Suscripción en tiempo real a "programacion_semanal"
   useEffect(() => {
-    // 1) Prepara la consulta ordenada por "orden"
+    // Programación semanal
     const q = query(
       collection(db, "programacion_semanal"),
       orderBy("orden", "asc")
     );
-
-    // 2) Suscríbete
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -123,12 +190,10 @@ export default function HomeVisitante() {
               titulo: data.titulo,
               descripcion: data.descripcion,
               imagen: data.imagen,
-              orden: Number(data.orden) || 0, // fuerza número
-            } as ProgramItem;
+              orden: Number(data.orden) || 0,
+            };
           })
-          // por seguridad, vuelve a ordenar en el cliente
           .sort((a, b) => a.orden - b.orden);
-
         setWeeklyPrograms(items);
         setLoadingPrograms(false);
       },
@@ -137,9 +202,63 @@ export default function HomeVisitante() {
         setLoadingPrograms(false);
       }
     );
-
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    // Conductores
+    const q = query(collection(db, "conductores"), orderBy("orden", "asc"));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs
+          .map((doc) => {
+            const data = doc.data() as any;
+            return {
+              id: doc.id,
+              titulo: data.titulo,
+              descripcion: data.descripcion,
+              descripcion_corta: data.descripcion_corta ?? "",
+              imagen: data.imagen,
+              orden: Number(data.orden) || 0,
+            };
+          })
+          .sort((a, b) => a.orden - b.orden);
+        setConductores(items);
+        setLoadingConductores(false);
+      },
+      (error) => {
+        console.error("Error snapshot conductores:", error);
+        setLoadingConductores(false);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    // Artistas
+    const q = query(collection(db, "artistas"), orderBy("orden", "asc"));
+    const unsub = onSnapshot(q, (snapshot) => {
+      setArtistas(
+        snapshot.docs.map((doc) => {
+          const data = doc.data() as any;
+          return {
+            id: doc.id,
+            titulo: data.titulo,
+            descripcion: data.descripcion,
+            imagen: data.imagen,
+            orden: Number(data.orden) || 0,
+            nombre: data.nombre ?? data.titulo ?? "",
+            descripcion_corta: data.descripcion_corta ?? "",
+          };
+        })
+      );
+      setLoadingArtistas(false);
+    });
+    return () => unsub();
+  }, []);
+
+  // --- OTRAS FUNCIONES ---
 
   useEffect(() => {
     const backAction = () => {
@@ -156,18 +275,16 @@ export default function HomeVisitante() {
   useEffect(() => {
     let idx = 0;
     const interval = setInterval(() => {
-      idx = (idx + 1) % sponsors.length;
-      sliderRef.current?.scrollTo({
-        x: idx * (width * 0.8 + 16),
-        animated: true,
-      });
+      if (sponsors.length > 0) {
+        idx = (idx + 1) % sponsors.length;
+        sliderRef.current?.scrollTo({
+          x: idx * (width * 0.8 + 16),
+          animated: true,
+        });
+      }
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
-
-  const handleOpenNews = (url: string) => {
-    console.log("Open news:", url);
-  };
+  }, [sponsors]);
 
   useEffect(() => {
     (async () => {
@@ -177,7 +294,6 @@ export default function HomeVisitante() {
         if (snap.exists()) {
           const data = snap.data() as { link?: string };
           if (data.link) {
-            // Asegúrate de que en Firestore el valor NO incluya comillas extra
             setLiveUrl(data.link);
           } else {
             console.warn("⚠️ El campo 'link' está vacío en programa_vivo/vivo");
@@ -193,45 +309,9 @@ export default function HomeVisitante() {
     })();
   }, []);
 
-  // Conductores / Influencers
-  type ConductorItem = {
-    id: string;
-    titulo: string;
-    descripcion: string;
-    imagen: string;
-    orden: number;
+  const handleOpenNews = (url: string) => {
+    Linking.openURL(url);
   };
-
-  const [conductores, setConductores] = useState<ConductorItem[]>([]);
-  const [loadingConductores, setLoadingConductores] = useState<boolean>(true);
-
-  useEffect(() => {
-    const q = query(collection(db, "conductores"), orderBy("orden", "asc"));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const items = snapshot.docs
-          .map((doc) => {
-            const data = doc.data() as any;
-            return {
-              id: doc.id,
-              titulo: data.titulo,
-              descripcion: data.descripcion,
-              imagen: data.imagen,
-              orden: Number(data.orden) || 0,
-            } as ConductorItem;
-          })
-          .sort((a, b) => a.orden - b.orden);
-        setConductores(items);
-        setLoadingConductores(false);
-      },
-      (error) => {
-        console.error("Error snapshot conductores:", error);
-        setLoadingConductores(false);
-      }
-    );
-    return () => unsubscribe();
-  }, []);
 
   return (
     <>
@@ -246,6 +326,7 @@ export default function HomeVisitante() {
       >
         <SafeAreaView style={styles.container}>
           <ScrollView>
+            {/* HEADER */}
             <View
               style={[
                 styles.header,
@@ -294,6 +375,7 @@ export default function HomeVisitante() {
 
             <View style={styles.divider} />
 
+            {/* VIVO */}
             <View style={styles.liveSection}>
               <Text style={styles.liveTitle}>🎥 ¡Programación en vivo!</Text>
               <Text style={styles.liveSubtitle}>TRANSMISIÓN EN VIVO</Text>
@@ -325,6 +407,7 @@ export default function HomeVisitante() {
               </View>
             </View>
 
+            {/* NOTICIAS */}
             <View style={styles.sectionBoxEnhancedNews}>
               <Text style={styles.sectionTitleEnhancedNews}>📰 Noticias</Text>
               {newsList.map((news, idx) => (
@@ -347,6 +430,7 @@ export default function HomeVisitante() {
               ))}
             </View>
 
+            {/* PROGRAMACIÓN SEMANAL */}
             <View style={styles.sectionBoxEnhanced}>
               <Text style={styles.sectionTitleEnhanced}>
                 📅 Programación Semanal
@@ -390,6 +474,7 @@ export default function HomeVisitante() {
               </View>
             </View>
 
+            {/* LO MÁS VISTO */}
             <View style={styles.sectionBoxEnhanced}>
               <Text style={styles.sectionTitleEnhanced}>🔥 Lo más visto</Text>
               <Text style={styles.sectionNoteEnhanced}>
@@ -398,8 +483,32 @@ export default function HomeVisitante() {
                   Iniciá sesión para acceder al contenido completo.
                 </Text>
               </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.programCarousel}
+              >
+                {topVideos.map((vid, idx) => (
+                  <TouchableOpacity
+                    key={vid.id}
+                    style={[styles.programCard, { width: width * 0.6 }]}
+                    onPress={() => {}}
+                  >
+                    <Image
+                      source={{ uri: vid.thumbnail }}
+                      style={styles.programImage}
+                    />
+                    <View style={styles.programInfo}>
+                      <Text style={styles.programTitle} numberOfLines={2}>
+                        {vid.title}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
-            {/* Conductores / Influencers */}
+
+            {/* CONDUCTORES / INFLUENCERS */}
             <View style={styles.sectionBoxEnhancedNews}>
               <Text style={styles.sectionTitleEnhancedNews}>
                 🎤 Conductores / Influencers
@@ -412,11 +521,7 @@ export default function HomeVisitante() {
                 />
               ) : (
                 conductores.map((c) => (
-                  <TouchableOpacity
-                    key={c.id}
-                    style={styles.newsCardEnhanced}
-                    onPress={() => {}}
-                  >
+                  <TouchableOpacity key={c.id} style={styles.newsCardEnhanced}>
                     <Image
                       source={{ uri: c.imagen }}
                       style={styles.newsImageEnhanced}
@@ -427,7 +532,7 @@ export default function HomeVisitante() {
                         style={styles.newsExcerptEnhanced}
                         numberOfLines={2}
                       >
-                        {c.descripcion}
+                        {c.descripcion_corta}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -435,6 +540,47 @@ export default function HomeVisitante() {
               )}
             </View>
 
+            {/* ARTISTAS / CONTRATACIÓN */}
+            <View style={styles.sectionBoxEnhancedNews}>
+              <Text style={styles.sectionTitleEnhancedNews}>
+                🎨 Artistas/Contratación
+              </Text>
+              {loadingArtistas ? (
+                <ActivityIndicator size="large" color="#0070f3" />
+              ) : (
+                artistas.map((a, idx) => (
+                  <TouchableOpacity key={a.id} style={styles.newsCardEnhanced}>
+                    <Image
+                      source={{ uri: a.imagen }}
+                      style={styles.newsImageEnhanced}
+                    />
+                    <View style={styles.newsContentEnhanced}>
+                      <Text style={styles.newsTitleEnhanced}>{a.nombre}</Text>
+                      <Text
+                        style={styles.newsExcerptEnhanced}
+                        numberOfLines={2}
+                      >
+                        {a.descripcion_corta}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+
+            {/* ZONA EXCLUSIVA */}
+            <View style={styles.sectionBoxEnhanced}>
+              <Text style={styles.sectionTitleEnhanced}>🎁 Zona Exclusiva</Text>
+              <Text style={styles.sectionNoteEnhanced}>
+                Esta sección es exclusiva para usuarios registrados.{"\n"}
+                <Text style={{ fontWeight: "bold" }}>
+                  Iniciá sesión para participar de sorteos y beneficios
+                  exclusivos.
+                </Text>
+              </Text>
+            </View>
+
+            {/* PODCAST */}
             <View style={styles.sectionBoxEnhancedPodcast}>
               <Text style={styles.sectionTitleEnhancedPodcast}>🎧 Podcast</Text>
               <Text style={styles.sectionNoteEnhancedPodcast}>
@@ -443,8 +589,29 @@ export default function HomeVisitante() {
                   Iniciá sesión para explorarlos.
                 </Text>
               </Text>
+              {categories.map((cat, idx) => (
+                <View key={idx} style={{ marginTop: 16 }}>
+                  <Text style={styles.subtitle}>{cat.name}</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {cat.episodes.map((podcast, idx2) => (
+                      <TouchableOpacity key={idx2} style={styles.card}>
+                        <Image
+                          source={{
+                            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsAenllxthyIJPyRRgKskFbrXOMnuRLlr7wQ&s",
+                          }}
+                          style={styles.cardImage}
+                        />
+                        <Text style={styles.cardTitle} numberOfLines={2}>
+                          {podcast.title}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              ))}
             </View>
-           
+
+            {/* AUSPICIANTES */}
             <View style={styles.sponsorBox}>
               <Text style={styles.sponsorTitle}>🤝 Nuestros Auspiciantes</Text>
               {loadingSponsors ? (
@@ -477,6 +644,8 @@ export default function HomeVisitante() {
                 </ScrollView>
               )}
             </View>
+
+            {/* REDES SOCIALES */}
             <View style={styles.socialBox}>
               <Text style={styles.socialTitleEnhanced}>
                 📲 Seguinos en redes sociales
