@@ -741,6 +741,7 @@ export default function Home() {
                 Participá de nuestros sorteos exclusivos para usuarios
                 registrados.
               </Text>
+
               {loadingUser || loadingSorteos ? (
                 <ActivityIndicator style={{ margin: 16 }} size="large" />
               ) : sorteoError ? (
@@ -769,6 +770,7 @@ export default function Home() {
                     />
                     <View style={{ marginLeft: 12, flex: 1 }}>
                       <Text style={{ fontWeight: "bold" }}>{item.titulo}</Text>
+                      {/* SOLO muestra el tilde si el usuario participa EN ESTE sorteo */}
                       {participando.has(item.id) && (
                         <Text style={{ color: "green", marginTop: 4 }}>
                           ✔ Participando
