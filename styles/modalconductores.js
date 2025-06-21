@@ -10,7 +10,7 @@ export default StyleSheet.create({
   },
   container: {
     width: width * 0.9,      // 90% del ancho de pantalla
-    maxHeight: height * 0.6, // 60% de la altura de pantalla
+    maxHeight: height * 0.9, // 60% de la altura de pantalla
     backgroundColor: 'rgb(248, 248, 248)',
     borderRadius: 12,
     padding: 20,
@@ -72,7 +72,7 @@ export default StyleSheet.create({
    backgroundColor: 'rgba(255, 255, 255, 0.28)',
     borderRadius: 12,
     padding: 16,
-    marginVertical: 16,
+    marginVertical: 49,
     alignItems: 'center',
     borderBottomWidth: 5,
     borderBottomColor: '#3b5998',
