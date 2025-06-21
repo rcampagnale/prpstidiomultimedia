@@ -195,6 +195,7 @@ export default function Home() {
   }, []);
 
   type ConductorItem = {
+    descripcion_corta: string;
     id: string;
     titulo: string;
     descripcion: string;
@@ -219,6 +220,7 @@ export default function Home() {
               id: doc.id,
               titulo: d.titulo,
               descripcion: d.descripcion,
+              descripcion_corta: d.descripcion_corta ?? "", // asegúrate de que sea string
               imagen: d.imagen,
               orden: Number(d.orden) || 0,
             } as ConductorItem;
@@ -660,7 +662,7 @@ export default function Home() {
                         style={styles.newsExcerptEnhanced}
                         numberOfLines={2}
                       >
-                        {c.descripcion}
+                        {c.descripcion_corta}
                       </Text>
                     </View>
                   </TouchableOpacity>

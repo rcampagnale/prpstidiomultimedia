@@ -17,6 +17,7 @@ type ConductorItem = {
   id: string;
   titulo: string;
   descripcion: string;
+  descripcion_corta: string;
   imagen: string;
   orden: number;
   facebook?: string;
