@@ -3,23 +3,29 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
   orderBy,
   query,
+  serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   ImageBackground,
   Linking,
+  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -32,10 +38,120 @@ import ModalConductores from "./modalconductores";
 // Obtener ancho de pantalla
 const { width } = Dimensions.get("window");
 
+// Sanitiza el título para usarlo como id de documento
+function slugify(text: string) {
+  return text
+    .toString()
+    .normalize("NFD") // quita tildes
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-") // espacios por guión
+    .replace(/[^\w\-]+/g, "") // quita caracteres no válidos
+    .replace(/\-\-+/g, "-"); // elimina guiones dobles
+}
+
 type Video = { id: string; thumbnail: string; title: string };
 
 export default function Home() {
   const router = useRouter();
+  // 1. Estados para sorteos (al inicio del Home)
+  const [sorteos, setSorteos] = useState<
+    { id: string; titulo: string; imagen: string }[]
+  >([]);
+  const [participando, setParticipando] = useState<Set<string>>(new Set());
+  const [codigoUsuario, setCodigoUsuario] = useState<string | null>(null);
+  const [loadingSorteos, setLoadingSorteos] = useState(true);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [sorteoError, setSorteoError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const dni = await AsyncStorage.getItem("loggedDNI");
+        if (!dni) throw new Error("No hay DNI guardado");
+        const snap = await getDoc(doc(db, "usuarios", dni));
+        if (!snap.exists()) throw new Error("Usuario no registrado");
+        setCodigoUsuario(snap.data()?.codigoUsuario);
+      } catch {
+        router.replace("/login");
+        return;
+      } finally {
+        setLoadingUser(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (loadingUser) return;
+    const unsub = onSnapshot(
+      query(collection(db, "sorteo"), orderBy("orden", "asc")),
+      (snap) => {
+        const arr = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+        setSorteos(arr);
+        setLoadingSorteos(false);
+      },
+      (e) => {
+        setSorteoError("Error cargando sorteos");
+        setLoadingSorteos(false);
+        console.error("Error cargando sorteos:", e);
+      }
+    );
+    return () => unsub();
+  }, [loadingUser]);
+
+  useEffect(() => {
+    if (loadingUser || loadingSorteos || !codigoUsuario) return;
+    const unsubs = sorteos.map((r) =>
+      onSnapshot(
+        doc(db, "codigo_sorteos", r.id, "participantes", codigoUsuario),
+        (snap) => {
+          setParticipando((prev) => {
+            const next = new Set(prev);
+            if (snap.exists()) next.add(r.id);
+            else next.delete(r.id);
+            return next;
+          });
+        }
+      )
+    );
+    return () => unsubs.forEach((fn) => fn());
+  }, [sorteos, codigoUsuario, loadingUser, loadingSorteos]);
+
+  const handleParticipar = async (id: string, titulo: string) => {
+    if (!codigoUsuario) return;
+    const ref = doc(db, "codigo_sorteos", id, "participantes", codigoUsuario);
+    const tituloDoc = slugify(titulo); // <- sanitiza el título
+    const generateRef = doc(
+      db,
+      "generar_sorteos",
+      tituloDoc,
+      "participantes",
+      codigoUsuario
+    );
+
+    try {
+      if (participando.has(id)) {
+        await deleteDoc(ref);
+        await deleteDoc(generateRef);
+        Platform.OS === "android"
+          ? ToastAndroid.show("Has salido del sorteo", ToastAndroid.SHORT)
+          : Alert.alert("Has salido del sorteo");
+      } else {
+        await setDoc(ref, { joinedAt: serverTimestamp() });
+        await setDoc(generateRef, {
+          codigoUsuario,
+          joinedAt: serverTimestamp(),
+        });
+        Platform.OS === "android"
+          ? ToastAndroid.show("Te has unido al sorteo", ToastAndroid.SHORT)
+          : Alert.alert("Te has unido al sorteo");
+      }
+    } catch (e: any) {
+      setSorteoError(e.message || "Error al actualizar participación");
+      console.error("Error al actualizar participación:", e);
+    }
+  };
 
   // 1) Estado para los sorteos y carga
   const [raffles, setRaffles] = useState<
@@ -620,52 +736,47 @@ export default function Home() {
               )}
             </View>
             <View style={styles.sectionBoxEnhanced}>
-              <View style={{ alignItems: "center" }}>
-                <Text style={styles.sectionTitleEnhanced}>
-                  🎁 Zona Exclusiva
-                </Text>
-              </View>
+              <Text style={styles.sectionTitleEnhanced}>🎁 Zona Exclusiva</Text>
               <Text style={styles.sectionNoteEnhanced}>
                 Participá de nuestros sorteos exclusivos para usuarios
                 registrados.
               </Text>
-
-              {loadingRaffles ? (
-                <ActivityIndicator
-                  size="large"
-                  color="#0070f3"
-                  style={{ marginVertical: 16 }}
-                />
-              ) : raffles.length > 0 ? (
-                <ScrollView>
-                  {raffles.map((raffle) => (
-                    <View key={raffle.id} style={styles.raffleRow}>
-                      {/* Imagen tappable */}
-                      <TouchableOpacity
-                        onPress={() => handleParticipate(raffle.id)}
-                      >
-                        <Image
-                          source={{ uri: raffle.imagen }}
-                          style={styles.raffleImage}
-                        />
-                      </TouchableOpacity>
-
-                      {/* Detalle y badge */}
-                      <View style={styles.raffleDetail}>
-                        <Text style={styles.raffleTitle}>{raffle.titulo}</Text>
-                        {participating.includes(raffle.id) && (
-                          <Text style={styles.participatingBadge}>
-                            ✔️ Estás participando
-                          </Text>
-                        )}
-                      </View>
-                    </View>
-                  ))}
-                </ScrollView>
-              ) : (
-                <Text style={styles.emptyText}>
-                  No hay sorteos disponibles.
+              {loadingUser || loadingSorteos ? (
+                <ActivityIndicator style={{ margin: 16 }} size="large" />
+              ) : sorteoError ? (
+                <Text style={{ color: "red", margin: 16, textAlign: "center" }}>
+                  {sorteoError}
                 </Text>
+              ) : sorteos.length === 0 ? (
+                <Text style={{ margin: 16, textAlign: "center" }}>
+                  No hay sorteos disponibles
+                </Text>
+              ) : (
+                sorteos.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => handleParticipar(item.id, item.titulo)}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginVertical: 8,
+                      paddingHorizontal: 16,
+                    }}
+                  >
+                    <Image
+                      source={{ uri: item.imagen }}
+                      style={{ width: 80, height: 80, borderRadius: 8 }}
+                    />
+                    <View style={{ marginLeft: 12, flex: 1 }}>
+                      <Text style={{ fontWeight: "bold" }}>{item.titulo}</Text>
+                      {participando.has(item.id) && (
+                        <Text style={{ color: "green", marginTop: 4 }}>
+                          ✔ Participando
+                        </Text>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))
               )}
             </View>
 

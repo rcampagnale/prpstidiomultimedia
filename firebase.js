@@ -26,7 +26,7 @@ const firebaseConfig = {
 console.log('🔍 firebaseConfig:', firebaseConfig);
 
 // Inicializamos Firebase App
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // Inicializamos Firestore con long polling (para evitar errores de cliente offline en React Native)
 export const db = initializeFirestore(app, {
