@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Alert,
-  Button,
   Image,
   Linking,
   Modal,
@@ -63,6 +62,15 @@ export default function ModalConductores({
     >
       <SafeAreaView style={styles.overlay}>
         <View style={styles.container}>
+          {/* BOTÓN CERRAR FLOTANTE */}
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={onClose}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.closeText}>✕</Text>
+          </TouchableOpacity>
+
           <ScrollView contentContainerStyle={styles.scrollContent}>
             <Image
               source={{ uri: conductor.imagen }}
@@ -113,13 +121,10 @@ export default function ModalConductores({
                 </TouchableOpacity>
               </View>
             </View>
-
-            <View style={styles.buttonWrapper}>
-              <Button title="Cerrar" onPress={onClose} />
-            </View>
           </ScrollView>
         </View>
       </SafeAreaView>
     </Modal>
   );
 }
+

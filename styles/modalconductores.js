@@ -4,13 +4,19 @@ const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)', // semitransparente para el fondo detrás del modal
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.45)", // Puedes ajustar el 0.45 para más/menos transparencia
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000, // asegurarte de que esté arriba de todo
   },
   container: {
-    width: width * 0.9,      // 90% del ancho de pantalla
-    maxHeight: height * 0.9, // 60% de la altura de pantalla
+    width: Math.min(width, 430),      // 90% del ancho de pantalla
+    minHeight: height * 0.6, // 60% de la altura de pantalla
     backgroundColor: 'rgb(248, 248, 248)',
     borderRadius: 12,
     padding: 20,
@@ -93,5 +99,26 @@ export default StyleSheet.create({
     height: 35,
     marginHorizontal: 8,
     resizeMode: 'contain',
+  },
+  closeButton: {
+    position: "absolute",
+    top: 18,
+    right: 18,
+    zIndex: 20,
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.14,
+    shadowRadius: 5,
+    shadowOffset: { width: 1, height: 2 },
+  },
+  closeText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#232323",
+    lineHeight: 26,
   },
 });
